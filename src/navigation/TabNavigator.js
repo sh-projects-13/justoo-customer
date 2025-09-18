@@ -1,0 +1,111 @@
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Ionicons } from '@expo/vector-icons';
+
+// Import screens
+import HomeScreen from '../screens/HomeScreen';
+import CartScreen from '../screens/CartScreen';
+import OrdersScreen from '../screens/OrdersScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ProductDetailScreen from '../screens/product/ProductDetailScreen';
+import CheckoutScreen from '../screens/checkout/CheckoutScreen';
+import AddressesScreen from '../screens/address/AddressesScreen';
+import OrderDetailScreen from '../screens/order/OrderDetailScreen';
+
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
+// Home Stack
+function HomeStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="HomeMain" component={HomeScreen} />
+            <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
+        </Stack.Navigator>
+    );
+}
+
+// Cart Stack
+function CartStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="CartMain" component={CartScreen} />
+            <Stack.Screen name="Checkout" component={CheckoutScreen} />
+        </Stack.Navigator>
+    );
+}
+
+// Orders Stack
+function OrdersStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="OrdersMain" component={OrdersScreen} />
+            <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+        </Stack.Navigator>
+    );
+}
+
+// Profile Stack
+function ProfileStack() {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+            <Stack.Screen name="Addresses" component={AddressesScreen} />
+        </Stack.Navigator>
+    );
+}
+
+export default function TabNavigator() {
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+
+                    if (route.name === 'Home') {
+                        iconName = focused ? 'home' : 'home-outline';
+                    } else if (route.name === 'Cart') {
+                        iconName = focused ? 'basket' : 'basket-outline';
+                    } else if (route.name === 'Orders') {
+                        iconName = focused ? 'list' : 'list-outline';
+                    } else if (route.name === 'Profile') {
+                        iconName = focused ? 'person' : 'person-outline';
+                    }
+
+                    return <Ionicons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: '#007AFF',
+                tabBarInactiveTintColor: 'gray',
+                headerStyle: {
+                    backgroundColor: '#fff',
+                },
+                headerTintColor: '#333',
+                headerTitleStyle: {
+                    fontWeight: 'bold',
+                },
+            })}
+        >
+            <Tab.Screen
+                name="Home"
+                component={HomeStack}
+                options={{ title: 'Justoo' }}
+            />
+            <Tab.Screen
+                name="Cart"
+                component={CartStack}
+                options={{ title: 'Cart' }}
+            />
+            <Tab.Screen
+                name="Orders"
+                component={OrdersStack}
+                options={{ title: 'Orders' }}
+            />
+            <Tab.Screen
+                name="Profile"
+                component={ProfileStack}
+                options={{ title: 'Profile' }}
+            />
+        </Tab.Navigator>
+    );
+}
