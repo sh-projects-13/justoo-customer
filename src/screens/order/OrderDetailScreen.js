@@ -10,18 +10,23 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ordersAPI } from '../services/api';
+import { ordersAPI } from '../../services/api';
 
 export default function OrderDetailScreen() {
     const [order, setOrder] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const navigation = useNavigation();
     const route = useRoute();
-    const { orderId } = route.params;
+    const { orderId } = route.params || {};
 
     useEffect(() => {
-        loadOrderDetails();
-    }, [orderId]);
+        if (orderId) {
+            loadOrderDetails();
+        } else {
+            Alert.alert('Error', 'Order ID not found');
+            navigation.goBack();
+        }
+    }, [orderId, navigation]);
 
     const loadOrderDetails = async () => {
         try {

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { addressesAPI } from '../services/api';
+import { addressesAPI } from '../../services/api';
 
 export default function AddressesScreen() {
     const [addresses, setAddresses] = useState([]);
@@ -89,26 +89,26 @@ export default function AddressesScreen() {
             <View style={styles.addressHeader}>
                 <View style={styles.addressTypeContainer}>
                     <Text style={styles.addressType}>
-                        {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                        {item?.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1) : 'Address'}
                     </Text>
-                    {item.isDefault ? (
+                    {item?.isDefault ? (
                         <View style={styles.defaultBadge}>
                             <Text style={styles.defaultText}>Default</Text>
                         </View>
                     ) : null}
                 </View>
                 <View style={styles.addressActions}>
-                    {!item.isDefault && (
+                    {!item?.isDefault && (
                         <TouchableOpacity
                             style={styles.actionButton}
-                            onPress={() => handleSetDefault(item.id)}
+                            onPress={() => handleSetDefault(item?.id)}
                         >
                             <Ionicons name="star-outline" size={20} color="#007AFF" />
                         </TouchableOpacity>
                     )}
                     <TouchableOpacity
                         style={styles.actionButton}
-                        onPress={() => handleDeleteAddress(item.id)}
+                        onPress={() => handleDeleteAddress(item?.id)}
                     >
                         <Ionicons name="trash-outline" size={20} color="#dc3545" />
                     </TouchableOpacity>
@@ -116,14 +116,14 @@ export default function AddressesScreen() {
             </View>
 
             <View style={styles.addressDetails}>
-                <Text style={styles.fullAddress}>{item.fullAddress}</Text>
-                {item.landmark && (
+                <Text style={styles.fullAddress}>{item?.fullAddress || 'Address not available'}</Text>
+                {item?.landmark && (
                     <Text style={styles.landmark}>Landmark: {item.landmark}</Text>
                 )}
                 <Text style={styles.cityState}>
-                    {item.city}, {item.state} {item.pincode}
+                    {item?.city || 'City'}, {item?.state || 'State'} {item?.pincode || 'Pincode'}
                 </Text>
-                <Text style={styles.country}>{item.country}</Text>
+                <Text style={styles.country}>{item?.country || 'Country'}</Text>
             </View>
         </View>
     );
@@ -166,9 +166,9 @@ export default function AddressesScreen() {
                 </View>
             ) : (
                 <FlatList
-                    data={addresses}
+                    data={addresses?.filter(item => item != null) || []}
                     renderItem={renderAddressItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
                     contentContainerStyle={styles.addressesList}
                     showsVerticalScrollIndicator={false}
                 />

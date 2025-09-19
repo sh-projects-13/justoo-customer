@@ -39,6 +39,7 @@ export default function CartScreen() {
     const updateItemQuantity = async (itemId, newQuantity) => {
         try {
             const response = await cartAPI.updateCartItem(itemId, { quantity: newQuantity });
+            console.log('Update item response:', response);
             if (response.data.success) {
                 setCart(response.data.data);
             }
@@ -99,55 +100,61 @@ export default function CartScreen() {
     };
 
     const handleCheckout = () => {
-        if (!cart || cart.items.length === 0) {
+        if (!cart || !cart.items || cart.items.length === 0) {
             Alert.alert('Empty Cart', 'Add items to cart before checkout');
             return;
         }
         navigation.navigate('Checkout');
     };
 
-    const renderCartItem = ({ item }) => (
-        <View style={styles.cartItem}>
-            <View style={styles.itemImage}>
-                <Text style={styles.itemImageText}>
-                    {item.name.charAt(0).toUpperCase()}
-                </Text>
-            </View>
+    const renderCartItem = ({ item }) => {
+        if (!item) {
+            return null; // Skip rendering if item is undefined/null
+        }
 
-            <View style={styles.itemDetails}>
-                <Text style={styles.itemName} numberOfLines={2}>
-                    {item.name}
-                </Text>
-                <Text style={styles.itemPrice}>₹{item.price}</Text>
-                <Text style={styles.itemUnit}>{item.unit}</Text>
-            </View>
+        return (
+            <View style={styles.cartItem}>
+                <View style={styles.itemImage}>
+                    <Text style={styles.itemImageText}>
+                        {item?.name ? item.name.charAt(0).toUpperCase() : '?'}
+                    </Text>
+                </View>
 
-            <View style={styles.quantityControls}>
+                <View style={styles.itemDetails}>
+                    <Text style={styles.itemName} numberOfLines={2}>
+                        {item?.name || 'Unknown Item'}
+                    </Text>
+                    <Text style={styles.itemPrice}>₹{item?.price || 0}</Text>
+                    <Text style={styles.itemUnit}>{item?.unit || 'unit'}</Text>
+                </View>
+
+                <View style={styles.quantityControls}>
+                    <TouchableOpacity
+                        style={styles.quantityButton}
+                        onPress={() => updateItemQuantity(item?.id, (item?.quantity || 1) - 1)}
+                    >
+                        <Ionicons name="remove" size={16} color="#007AFF" />
+                    </TouchableOpacity>
+
+                    <Text style={styles.quantityText}>{item?.quantity || 0}</Text>
+
+                    <TouchableOpacity
+                        style={styles.quantityButton}
+                        onPress={() => updateItemQuantity(item?.id, (item?.quantity || 1) + 1)}
+                    >
+                        <Ionicons name="add" size={16} color="#007AFF" />
+                    </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity
-                    style={styles.quantityButton}
-                    onPress={() => updateItemQuantity(item.id, item.quantity - 1)}
+                    style={styles.removeButton}
+                    onPress={() => removeItem(item?.id)}
                 >
-                    <Ionicons name="remove" size={16} color="#007AFF" />
-                </TouchableOpacity>
-
-                <Text style={styles.quantityText}>{item.quantity}</Text>
-
-                <TouchableOpacity
-                    style={styles.quantityButton}
-                    onPress={() => updateItemQuantity(item.id, item.quantity + 1)}
-                >
-                    <Ionicons name="add" size={16} color="#007AFF" />
+                    <Ionicons name="trash" size={20} color="#ff4444" />
                 </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-                style={styles.removeButton}
-                onPress={() => removeItem(item.id)}
-            >
-                <Ionicons name="trash" size={20} color="#ff4444" />
-            </TouchableOpacity>
-        </View>
-    );
+        );
+    };
 
     if (isLoading) {
         return (
@@ -157,7 +164,7 @@ export default function CartScreen() {
         );
     }
 
-    if (!cart || cart.items.length === 0) {
+    if (!cart || !cart.items || cart.items.length === 0) {
         return (
             <View style={styles.emptyContainer}>
                 <Ionicons name="basket-outline" size={80} color="#ccc" />
@@ -177,9 +184,9 @@ export default function CartScreen() {
         <View style={styles.container}>
             {/* Cart Items */}
             <FlatList
-                data={cart.items}
+                data={cart?.items?.filter(item => item != null) || []}
                 renderItem={renderCartItem}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
                 contentContainerStyle={styles.cartList}
                 showsVerticalScrollIndicator={false}
             />
@@ -187,8 +194,8 @@ export default function CartScreen() {
             {/* Cart Summary */}
             <View style={styles.summaryContainer}>
                 <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Items ({cart.itemCount})</Text>
-                    <Text style={styles.summaryValue}>₹{cart.total}</Text>
+                    <Text style={styles.summaryLabel}>Items ({cart?.itemCount || 0})</Text>
+                    <Text style={styles.summaryValue}>₹{cart?.total || 0}</Text>
                 </View>
 
                 <TouchableOpacity style={styles.clearButton} onPress={clearCart}>

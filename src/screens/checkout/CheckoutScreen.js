@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { cartAPI, addressesAPI, ordersAPI } from '../services/api';
+import { cartAPI, addressesAPI, ordersAPI } from '../../services/api';
 
 export default function CheckoutScreen() {
     const [cartSummary, setCartSummary] = useState(null);
@@ -151,23 +151,23 @@ export default function CheckoutScreen() {
                     </View>
                 ) : (
                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        {addresses.map((address) => (
+                        {addresses?.filter(address => address != null).map((address) => (
                             <TouchableOpacity
-                                key={address.id}
+                                key={address?.id || Math.random()}
                                 style={[
                                     styles.addressCard,
-                                    selectedAddress?.id === address.id && styles.addressCardSelected,
+                                    selectedAddress?.id === address?.id && styles.addressCardSelected,
                                 ]}
                                 onPress={() => selectAddress(address)}
                             >
                                 <Text style={styles.addressType}>
-                                    {address.type.charAt(0).toUpperCase() + address.type.slice(1)}
-                                    {address.isDefault && ' (Default)'}
+                                    {address?.type ? address.type.charAt(0).toUpperCase() + address.type.slice(1) : 'Address'}
+                                    {address?.isDefault && ' (Default)'}
                                 </Text>
                                 <Text style={styles.addressText} numberOfLines={3}>
-                                    {address.fullAddress}
+                                    {address?.fullAddress || 'Address not available'}
                                 </Text>
-                                {address.landmark && (
+                                {address?.landmark && (
                                     <Text style={styles.landmarkText}>{address.landmark}</Text>
                                 )}
                             </TouchableOpacity>
@@ -183,15 +183,15 @@ export default function CheckoutScreen() {
                     <Text style={styles.sectionTitle}>Order Summary</Text>
                 </View>
 
-                {cartSummary.items.map((item) => (
-                    <View key={item.id} style={styles.orderItem}>
+                {cartSummary?.items?.filter(item => item != null).map((item) => (
+                    <View key={item?.id || Math.random()} style={styles.orderItem}>
                         <View style={styles.itemInfo}>
                             <Text style={styles.itemName} numberOfLines={2}>
-                                {item.name}
+                                {item?.name || 'Unknown Item'}
                             </Text>
-                            <Text style={styles.itemQuantity}>Qty: {item.quantity}</Text>
+                            <Text style={styles.itemQuantity}>Qty: {item?.quantity || 0}</Text>
                         </View>
-                        <Text style={styles.itemPrice}>₹{item.totalPrice}</Text>
+                        <Text style={styles.itemPrice}>₹{item?.totalPrice || 0}</Text>
                     </View>
                 ))}
             </View>

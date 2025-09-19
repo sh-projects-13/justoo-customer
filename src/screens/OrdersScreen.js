@@ -82,33 +82,33 @@ export default function OrdersScreen() {
     const renderOrderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.orderCard}
-            onPress={() => navigation.navigate('OrderDetail', { orderId: item.id })}
+            onPress={() => navigation.navigate('OrderDetail', { orderId: item?.id })}
         >
             <View style={styles.orderHeader}>
-                <Text style={styles.orderNumber}>Order #{item.id}</Text>
+                <Text style={styles.orderNumber}>Order #{item?.id || 'N/A'}</Text>
                 <View
                     style={[
                         styles.statusBadge,
-                        { backgroundColor: getStatusColor(item.status) },
+                        { backgroundColor: getStatusColor(item?.status) },
                     ]}
                 >
                     <Text style={styles.statusText}>
-                        {item.status.replace('_', ' ').toUpperCase()}
+                        {item?.status ? item.status.replace('_', ' ').toUpperCase() : 'UNKNOWN'}
                     </Text>
                 </View>
             </View>
 
             <View style={styles.orderDetails}>
                 <Text style={styles.orderDate}>
-                    {formatDate(item.orderPlacedAt)}
+                    {item?.orderPlacedAt ? formatDate(item.orderPlacedAt) : 'Date not available'}
                 </Text>
                 <Text style={styles.itemCount}>
-                    {item.itemCount} item{item.itemCount > 1 ? 's' : ''}
+                    {item?.itemCount || 0} item{(item?.itemCount || 0) > 1 ? 's' : ''}
                 </Text>
             </View>
 
             <View style={styles.orderFooter}>
-                <Text style={styles.orderTotal}>₹{item.totalAmount}</Text>
+                <Text style={styles.orderTotal}>₹{item?.totalAmount || 0}</Text>
                 <Ionicons name="chevron-forward" size={20} color="#666" />
             </View>
         </TouchableOpacity>
@@ -128,16 +128,16 @@ export default function OrdersScreen() {
             {stats && (
                 <View style={styles.statsContainer}>
                     <View style={styles.statCard}>
-                        <Text style={styles.statValue}>{stats.overview.totalOrders}</Text>
+                        <Text style={styles.statValue}>{stats?.overview?.totalOrders || 0}</Text>
                         <Text style={styles.statLabel}>Total Orders</Text>
                     </View>
                     <View style={styles.statCard}>
-                        <Text style={styles.statValue}>₹{stats.overview.totalSpent}</Text>
+                        <Text style={styles.statValue}>₹{stats?.overview?.totalSpent || 0}</Text>
                         <Text style={styles.statLabel}>Total Spent</Text>
                     </View>
                     <View style={styles.statCard}>
                         <Text style={styles.statValue}>
-                            ₹{stats.overview.avgOrderValue ? Math.round(stats.overview.avgOrderValue) : 0}
+                            ₹{stats?.overview?.avgOrderValue ? Math.round(stats.overview.avgOrderValue) : 0}
                         </Text>
                         <Text style={styles.statLabel}>Avg Order</Text>
                     </View>
@@ -156,9 +156,9 @@ export default function OrdersScreen() {
                     </View>
                 ) : (
                     <FlatList
-                        data={orders}
+                        data={orders?.filter(item => item != null) || []}
                         renderItem={renderOrderItem}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
                         contentContainerStyle={styles.ordersList}
                         showsVerticalScrollIndicator={false}
                     />

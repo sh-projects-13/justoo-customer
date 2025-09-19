@@ -76,6 +76,11 @@ export default function HomeScreen() {
     };
 
     const addToCart = async (item) => {
+        if (!item || !item.id) {
+            Alert.alert('Error', 'Invalid item data');
+            return;
+        }
+
         try {
             const response = await cartAPI.addToCart({
                 itemId: item.id,
@@ -99,51 +104,63 @@ export default function HomeScreen() {
         loadInitialData();
     };
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity
-            style={styles.itemCard}
-            onPress={() => navigation.navigate('ProductDetail', { item })}
-        >
-            <View style={styles.itemImage}>
-                <Text style={styles.itemImageText}>
-                    {item.name.charAt(0).toUpperCase()}
-                </Text>
-            </View>
-            <View style={styles.itemInfo}>
-                <Text style={styles.itemName} numberOfLines={2}>
-                    {item.name}
-                </Text>
-                <Text style={styles.itemPrice}>₹{item.price}</Text>
-                {item.discount > 0 && (
-                    <Text style={styles.itemDiscount}>
-                        {item.discount}% off
-                    </Text>
-                )}
-            </View>
-            <TouchableOpacity style={styles.addButton} onPress={() => addToCart(item)}>
-                <Ionicons name="add" size={20} color="#fff" />
-            </TouchableOpacity>
-        </TouchableOpacity>
-    );
+    const renderItem = ({ item }) => {
+        if (!item || !item.name || !item.price) {
+            return null; // Skip rendering if item data is incomplete
+        }
 
-    const renderCategory = ({ item }) => (
-        <TouchableOpacity
-            style={[
-                styles.categoryChip,
-                selectedCategory === item.category && styles.categoryChipSelected,
-            ]}
-            onPress={() => handleCategorySelect(item.category)}
-        >
-            <Text
-                style={[
-                    styles.categoryText,
-                    selectedCategory === item.category && styles.categoryTextSelected,
-                ]}
+        return (
+            <TouchableOpacity
+                style={styles.itemCard}
+                onPress={() => navigation.navigate('ProductDetail', { item })}
             >
-                {item.category}
-            </Text>
-        </TouchableOpacity>
-    );
+                <View style={styles.itemImage}>
+                    <Text style={styles.itemImageText}>
+                        {item.name.charAt(0).toUpperCase()}
+                    </Text>
+                </View>
+                <View style={styles.itemInfo}>
+                    <Text style={styles.itemName} numberOfLines={2}>
+                        {item.name}
+                    </Text>
+                    <Text style={styles.itemPrice}>₹{item.price}</Text>
+                    {item.discount > 0 && (
+                        <Text style={styles.itemDiscount}>
+                            {item.discount}% off
+                        </Text>
+                    )}
+                </View>
+                <TouchableOpacity style={styles.addButton} onPress={() => addToCart(item)}>
+                    <Ionicons name="add" size={20} color="#fff" />
+                </TouchableOpacity>
+            </TouchableOpacity>
+        );
+    };
+
+    const renderCategory = ({ item }) => {
+        if (!item || !item.category) {
+            return null; // Skip rendering if category data is incomplete
+        }
+
+        return (
+            <TouchableOpacity
+                style={[
+                    styles.categoryChip,
+                    selectedCategory === item.category && styles.categoryChipSelected,
+                ]}
+                onPress={() => handleCategorySelect(item.category)}
+            >
+                <Text
+                    style={[
+                        styles.categoryText,
+                        selectedCategory === item.category && styles.categoryTextSelected,
+                    ]}
+                >
+                    {item.category}
+                </Text>
+            </TouchableOpacity>
+        );
+    };
 
     if (isLoading) {
         return (
@@ -172,9 +189,9 @@ export default function HomeScreen() {
             {/* Categories */}
             <View style={styles.categoriesContainer}>
                 <FlatList
-                    data={categories}
+                    data={categories?.filter(item => item != null) || []}
                     renderItem={renderCategory}
-                    keyExtractor={(item) => item.category}
+                    keyExtractor={(item) => item?.category?.toString() || Math.random().toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.categoriesList}
@@ -193,9 +210,9 @@ export default function HomeScreen() {
                 <View style={styles.featuredContainer}>
                     <Text style={styles.sectionTitle}>Featured Items</Text>
                     <FlatList
-                        data={featuredItems}
+                        data={featuredItems?.filter(item => item != null) || []}
                         renderItem={renderItem}
-                        keyExtractor={(item) => item.id.toString()}
+                        keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.featuredList}
@@ -209,9 +226,9 @@ export default function HomeScreen() {
                     {selectedCategory ? `${selectedCategory} Items` : searchQuery ? 'Search Results' : 'All Items'}
                 </Text>
                 <FlatList
-                    data={items}
+                    data={items?.filter(item => item != null) || []}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
                     numColumns={2}
                     contentContainerStyle={styles.itemsList}
                     showsVerticalScrollIndicator={false}

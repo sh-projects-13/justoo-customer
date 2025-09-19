@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { itemsAPI, cartAPI } from '../services/api';
+import { itemsAPI, cartAPI } from '../../services/api';
 
 export default function ProductDetailScreen() {
     const [item, setItem] = useState(null);
@@ -19,16 +19,18 @@ export default function ProductDetailScreen() {
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const navigation = useNavigation();
     const route = useRoute();
-    const { item: itemData } = route.params;
+    const { item: itemData } = route.params || {};
 
     useEffect(() => {
         if (itemData) {
             setItem(itemData);
             setIsLoading(false);
         } else {
-            loadItemDetails();
+            // If no item data is passed, go back
+            Alert.alert('Error', 'Item data not found');
+            navigation.goBack();
         }
-    }, [itemData]);
+    }, [itemData, navigation]);
 
     const loadItemDetails = async () => {
         try {
@@ -140,7 +142,12 @@ export default function ProductDetailScreen() {
                 </View>
 
                 <Text style={styles.unitText}>Unit: {item.unit}</Text>
-                <Text style={styles.stockText}>
+                <Text
+                    style={[
+                        styles.stockText,
+                        { color: item.quantity > 0 ? '#28a745' : '#dc3545' },
+                    ]}
+                >
                     {item.quantity > 0 ? `${item.quantity} in stock` : 'Out of stock'}
                 </Text>
             </View>
@@ -311,7 +318,6 @@ const styles = StyleSheet.create({
     },
     stockText: {
         fontSize: 14,
-        color: item?.quantity > 0 ? '#28a745' : '#dc3545',
         fontWeight: '600',
     },
     descriptionContainer: {
