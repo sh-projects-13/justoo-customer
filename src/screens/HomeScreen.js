@@ -8,10 +8,12 @@ import {
     TextInput,
     ActivityIndicator,
     Alert,
+    Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { itemsAPI, cartAPI } from '../services/api';
+import ItemImage from '../components/ItemImage';
 
 export default function HomeScreen() {
     const [items, setItems] = useState([]);
@@ -114,11 +116,7 @@ export default function HomeScreen() {
                 style={styles.itemCard}
                 onPress={() => navigation.navigate('ProductDetail', { item })}
             >
-                <View style={styles.itemImage}>
-                    <Text style={styles.itemImageText}>
-                        {item.name.charAt(0).toUpperCase()}
-                    </Text>
-                </View>
+                <ItemImage item={item} size={60} style={styles.itemImage} />
                 <View style={styles.itemInfo}>
                     <Text style={styles.itemName} numberOfLines={2}>
                         {item.name}
@@ -347,18 +345,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     itemImage: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: '#007AFF',
-        justifyContent: 'center',
-        alignItems: 'center',
         marginBottom: 10,
-    },
-    itemImageText: {
-        color: '#fff',
-        fontSize: 24,
-        fontWeight: 'bold',
     },
     itemInfo: {
         flex: 1,

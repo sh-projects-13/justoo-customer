@@ -7,10 +7,12 @@ import {
     ScrollView,
     ActivityIndicator,
     Alert,
+    Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { itemsAPI, cartAPI } from '../../services/api';
+import ItemImage from '../../components/ItemImage';
 
 export default function ProductDetailScreen() {
     const [item, setItem] = useState(null);
@@ -120,11 +122,11 @@ export default function ProductDetailScreen() {
 
             {/* Product Image */}
             <View style={styles.imageContainer}>
-                <View style={styles.productImage}>
-                    <Text style={styles.imageText}>
-                        {item.name.charAt(0).toUpperCase()}
-                    </Text>
-                </View>
+                <ItemImage
+                    item={item}
+                    size={200}
+                    textStyle={styles.imageText}
+                />
             </View>
 
             {/* Product Info */}
@@ -260,18 +262,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
     },
-    productImage: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: '#007AFF',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
     imageText: {
-        color: '#fff',
         fontSize: 80,
-        fontWeight: 'bold',
     },
     productInfo: {
         padding: 20,

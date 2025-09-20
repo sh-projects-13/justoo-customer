@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Create axios instance
 const api = axios.create({
     baseURL: __DEV__
-        ? 'https://8ed0570b21ff.ngrok-free.app/api'  // Development
+        ? 'https://e4a15351e443.ngrok-free.app/api'  // Development
         : 'https://your-production-api.com/api', // Production
     timeout: 10000,
     headers: {
@@ -61,6 +61,20 @@ export const itemsAPI = {
     searchItems: (query) => api.get('/items/search', { params: { q: query } }),
     getItemsByCategory: (category, params) => api.get(`/items/category/${category}`, { params }),
     getSuggestions: () => api.get('/items/suggestions'),
+    getItemImage: (itemId) => api.get(`/items/${itemId}/image`),
+    uploadItemImage: (itemId, imageData) => {
+        const formData = new FormData();
+        formData.append('image', {
+            uri: imageData.uri,
+            type: imageData.type || 'image/jpeg',
+            name: imageData.name || 'image.jpg',
+        });
+        return api.post(`/items/${itemId}/image`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    },
 };
 
 // Cart API

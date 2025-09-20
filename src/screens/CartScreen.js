@@ -7,10 +7,12 @@ import {
     StyleSheet,
     Alert,
     ActivityIndicator,
+    Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { cartAPI } from '../services/api';
+import ItemImage from '../components/ItemImage';
 
 export default function CartScreen() {
     const [cart, setCart] = useState(null);
@@ -114,11 +116,11 @@ export default function CartScreen() {
 
         return (
             <View style={styles.cartItem}>
-                <View style={styles.itemImage}>
-                    <Text style={styles.itemImageText}>
-                        {item?.name ? item.name.charAt(0).toUpperCase() : '?'}
-                    </Text>
-                </View>
+                <ItemImage
+                    item={item}
+                    size={50}
+                    style={styles.itemImage}
+                />
 
                 <View style={styles.itemDetails}>
                     <Text style={styles.itemName} numberOfLines={2}>
@@ -271,18 +273,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     itemImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#007AFF',
-        justifyContent: 'center',
-        alignItems: 'center',
         marginRight: 15,
-    },
-    itemImageText: {
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 'bold',
     },
     itemDetails: {
         flex: 1,
