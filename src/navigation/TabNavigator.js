@@ -11,6 +11,8 @@ import ProfileScreen from '../screens/ProfileScreen';
 import ProductDetailScreen from '../screens/product/ProductDetailScreen';
 import CheckoutScreen from '../screens/checkout/CheckoutScreen';
 import AddressesScreen from '../screens/address/AddressesScreen';
+import AddAddressScreen from '../screens/address/AddAddressScreen';
+import EditAddressScreen from '../screens/address/EditAddressScreen';
 import OrderDetailScreen from '../screens/order/OrderDetailScreen';
 
 const Tab = createBottomTabNavigator();
@@ -52,6 +54,8 @@ function ProfileStack() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="ProfileMain" component={ProfileScreen} />
             <Stack.Screen name="Addresses" component={AddressesScreen} />
+            <Stack.Screen name="AddAddress" component={AddAddressScreen} />
+            <Stack.Screen name="EditAddress" component={EditAddressScreen} />
         </Stack.Navigator>
     );
 }

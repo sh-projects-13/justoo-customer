@@ -99,6 +99,7 @@ export const ordersAPI = {
 // Addresses API
 export const addressesAPI = {
     getAddresses: () => api.get('/addresses'),
+    getAddressById: (addressId) => api.get(`/addresses/${addressId}`),
     getDefaultAddress: () => api.get('/addresses/default'),
     addAddress: (data) => api.post('/addresses', data),
     updateAddress: (addressId, data) => api.put(`/addresses/${addressId}`, data),

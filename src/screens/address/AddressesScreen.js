@@ -9,7 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { addressesAPI } from '../../services/api';
 
 export default function AddressesScreen() {
@@ -20,6 +20,13 @@ export default function AddressesScreen() {
     useEffect(() => {
         loadAddresses();
     }, []);
+
+    // Refresh addresses when screen comes into focus
+    useFocusEffect(
+        React.useCallback(() => {
+            loadAddresses();
+        }, [])
+    );
 
     const loadAddresses = async () => {
         try {
@@ -108,6 +115,12 @@ export default function AddressesScreen() {
                     )}
                     <TouchableOpacity
                         style={styles.actionButton}
+                        onPress={() => navigation.navigate('EditAddress', { addressId: item?.id })}
+                    >
+                        <Ionicons name="pencil-outline" size={20} color="#007AFF" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.actionButton}
                         onPress={() => handleDeleteAddress(item?.id)}
                     >
                         <Ionicons name="trash-outline" size={20} color="#dc3545" />
@@ -147,7 +160,10 @@ export default function AddressesScreen() {
                     <Ionicons name="arrow-back" size={24} color="#333" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>My Addresses</Text>
-                <TouchableOpacity style={styles.addButton}>
+                <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => navigation.navigate('AddAddress')}
+                >
                     <Ionicons name="add" size={24} color="#007AFF" />
                 </TouchableOpacity>
             </View>
@@ -160,7 +176,10 @@ export default function AddressesScreen() {
                     <Text style={styles.emptySubtext}>
                         Add your delivery addresses to place orders
                     </Text>
-                    <TouchableOpacity style={styles.addFirstAddressButton}>
+                    <TouchableOpacity
+                        style={styles.addFirstAddressButton}
+                        onPress={() => navigation.navigate('AddAddress')}
+                    >
                         <Text style={styles.addFirstAddressText}>Add Address</Text>
                     </TouchableOpacity>
                 </View>
