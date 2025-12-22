@@ -60,17 +60,30 @@ export default function CheckoutScreen() {
             return;
         }
 
+        if (!cartSummary || !cartSummary.items || cartSummary.items.length === 0) {
+            Alert.alert('Error', 'Your cart is empty');
+            navigation.goBack();
+            return;
+        }
+
         try {
             setIsPlacingOrder(true);
+            console.log('Placing order with:', {
+                deliveryAddressId: selectedAddress.id,
+                paymentMethod,
+            });
+
             const response = await ordersAPI.createOrder({
                 deliveryAddressId: selectedAddress.id,
                 paymentMethod,
             });
 
+            console.log('Order response:', response.data);
+
             if (response.data.success) {
                 Alert.alert(
                     'Order Placed!',
-                    `Your order has been placed successfully. Order #${response.data.data.orderNumber}`,
+                    `Your order has been placed successfully. Order #${response.data.data.orderNumber || response.data.data.order?.id || 'N/A'}`,
                     [
                         {
                             text: 'View Order',
@@ -85,11 +98,30 @@ export default function CheckoutScreen() {
                     ]
                 );
             } else {
-                Alert.alert('Error', response.data.message);
+                Alert.alert('Error', response.data.message || 'Failed to place order');
             }
         } catch (error) {
             console.error('Error placing order:', error);
-            Alert.alert('Error', 'Failed to place order');
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status,
+            });
+
+            let errorMessage = 'Failed to place order. ';
+            if (error.response?.data?.message) {
+                errorMessage += error.response.data.message;
+            } else if (error.response?.status === 500) {
+                errorMessage += 'Server error occurred. Please try again later.';
+            } else if (error.message === 'Network Error') {
+                errorMessage += 'Network connection failed. Please check your internet connection.';
+            } else if (error.code === 'ECONNABORTED') {
+                errorMessage += 'Request timed out. Please try again.';
+            } else {
+                errorMessage += error.message || 'Unknown error occurred.';
+            }
+
+            Alert.alert('Error', errorMessage);
         } finally {
             setIsPlacingOrder(false);
         }
@@ -241,10 +273,6 @@ export default function CheckoutScreen() {
                 <View style={styles.totalRow}>
                     <Text style={styles.totalLabel}>Delivery Fee</Text>
                     <Text style={styles.totalValue}>₹{cartSummary.deliveryFee}</Text>
-                </View>
-                <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>Tax</Text>
-                    <Text style={styles.totalValue}>₹{cartSummary.taxAmount}</Text>
                 </View>
                 <View style={[styles.totalRow, styles.finalTotal]}>
                     <Text style={styles.finalTotalLabel}>Total</Text>

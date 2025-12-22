@@ -188,10 +188,6 @@ export default function OrderDetailScreen() {
                     <Text style={styles.summaryLabel}>Delivery Fee</Text>
                     <Text style={styles.summaryValue}>₹{order.deliveryFee}</Text>
                 </View>
-                <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Tax</Text>
-                    <Text style={styles.summaryValue}>₹{order.taxAmount}</Text>
-                </View>
                 <View style={[styles.summaryRow, styles.totalRow]}>
                     <Text style={styles.totalLabel}>Total</Text>
                     <Text style={styles.totalValue}>₹{order.totalAmount}</Text>

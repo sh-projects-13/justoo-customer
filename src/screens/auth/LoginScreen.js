@@ -30,6 +30,7 @@ export default function LoginScreen() {
         setIsLoading(true);
         try {
             const result = await login(phone, password);
+            console.log(result);
             if (!result.success) {
                 Alert.alert('Login Failed', result.message);
             }

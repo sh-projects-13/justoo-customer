@@ -10,7 +10,7 @@ import {
     Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { cartAPI } from '../services/api';
 import ItemImage from '../components/ItemImage';
 
@@ -23,16 +23,27 @@ export default function CartScreen() {
         loadCart();
     }, []);
 
+    // Refresh cart when screen comes into focus
+    useFocusEffect(
+        React.useCallback(() => {
+            loadCart();
+        }, [])
+    );
+
     const loadCart = async () => {
         try {
             setIsLoading(true);
             const response = await cartAPI.getCart();
             if (response.data.success) {
                 setCart(response.data.data);
+            } else {
+                // If cart fetch fails, set empty cart
+                setCart({ items: [], total: 0, itemCount: 0 });
             }
         } catch (error) {
             console.error('Error loading cart:', error);
-            Alert.alert('Error', 'Failed to load cart');
+            // Set empty cart on error instead of showing alert repeatedly
+            setCart({ items: [], total: 0, itemCount: 0 });
         } finally {
             setIsLoading(false);
         }

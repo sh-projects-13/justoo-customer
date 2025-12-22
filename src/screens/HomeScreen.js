@@ -90,7 +90,13 @@ export default function HomeScreen() {
             });
 
             if (response.data.success) {
-                Alert.alert('Success', 'Item added to cart!');
+                Alert.alert('Success', 'Item added to cart!', [
+                    { text: 'Continue Shopping', style: 'cancel' },
+                    {
+                        text: 'View Cart',
+                        onPress: () => navigation.navigate('Cart')
+                    }
+                ]);
             } else {
                 Alert.alert('Error', response.data.message);
             }

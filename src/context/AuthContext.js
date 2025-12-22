@@ -43,14 +43,21 @@ export const AuthProvider = ({ children }) => {
     const login = async (phone, password) => {
         try {
             const response = await api.post('/auth/login', { phone, password });
-
+            console.log(response.data);
             if (response.data.success) {
-                const { customer, token } = response.data.data;
+
+                const { customer, token } = response.data.data || {};
+
+                // Guard missing token from backend to avoid writing undefined
+                if (!token) {
+                    console.warn('Login succeeded but token is missing in response payload');
+                    return { success: false, message: 'Login failed: missing token from server' };
+                }
 
                 await AsyncStorage.setItem('token', token);
-                await AsyncStorage.setItem('user', JSON.stringify(customer));
+                await AsyncStorage.setItem('user', JSON.stringify(customer || {}));
 
-                setUser(customer);
+                setUser(customer || null);
                 setIsAuthenticated(true);
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
@@ -62,7 +69,7 @@ export const AuthProvider = ({ children }) => {
             console.error('Login error:', error);
             return {
                 success: false,
-                message: error.response?.data?.message || 'Login failed'
+                message: error.response?.data?.message || error.message || 'Login failed'
             };
         }
     };
@@ -72,12 +79,17 @@ export const AuthProvider = ({ children }) => {
             const response = await api.post('/auth/register', userData);
 
             if (response.data.success) {
-                const { customer, token } = response.data.data;
+                const { customer, token } = response.data.data || {};
+
+                if (!token) {
+                    console.warn('Register succeeded but token is missing in response payload');
+                    return { success: false, message: 'Registration failed: missing token from server' };
+                }
 
                 await AsyncStorage.setItem('token', token);
-                await AsyncStorage.setItem('user', JSON.stringify(customer));
+                await AsyncStorage.setItem('user', JSON.stringify(customer || {}));
 
-                setUser(customer);
+                setUser(customer || null);
                 setIsAuthenticated(true);
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
@@ -89,7 +101,7 @@ export const AuthProvider = ({ children }) => {
             console.error('Register error:', error);
             return {
                 success: false,
-                message: error.response?.data?.message || 'Registration failed'
+                message: error.response?.data?.message || error.message || 'Registration failed'
             };
         }
     };

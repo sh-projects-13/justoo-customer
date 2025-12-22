@@ -3,10 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create axios instance
 const api = axios.create({
-    baseURL: __DEV__
-        ? 'https://e4a15351e443.ngrok-free.app/api'  // Development
-        : 'https://your-production-api.com/api', // Production
-    timeout: 10000,
+    baseURL: `${process.env.EXPO_PUBLIC_API_BASE_URL}/api/customer`,
+    timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -32,6 +30,15 @@ api.interceptors.response.use(
         return response;
     },
     async (error) => {
+        // Log detailed error information for debugging
+        console.log('API Error:', {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+        });
+
         if (error.response?.status === 401) {
             // Token expired or invalid
             await AsyncStorage.removeItem('token');
