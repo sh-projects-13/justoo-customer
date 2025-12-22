@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { itemsAPI, cartAPI } from '../services/api';
 import ItemImage from '../components/ItemImage';
+import { colors, spacing, typography, radius, shadow } from '../theme';
 
 export default function HomeScreen() {
     const [items, setItems] = useState([]);
@@ -72,6 +73,22 @@ export default function HomeScreen() {
         } catch (error) {
             console.error('Search error:', error);
             Alert.alert('Error', 'Search failed');
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const handleCategorySelect = async (category) => {
+        setSelectedCategory(category);
+        try {
+            setIsSearching(true);
+            const response = await itemsAPI.getItemsByCategory(category, { limit: 20 });
+            if (response.data.success) {
+                setItems(response.data.data.items || []);
+            }
+        } catch (error) {
+            console.error('Category filter error:', error);
+            Alert.alert('Error', 'Could not load this category');
         } finally {
             setIsSearching(false);
         }
@@ -176,68 +193,96 @@ export default function HomeScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Search Bar */}
-            <View style={styles.searchContainer}>
-                <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search products..."
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    onSubmitEditing={() => handleSearch(searchQuery)}
-                    returnKeyType="search"
-                />
-                {isSearching && <ActivityIndicator size="small" color="#007AFF" />}
-            </View>
+            <FlatList
+                data={items?.filter(item => item != null) || []}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => item?.id?.toString() || `item-${index}`}
+                numColumns={2}
+                columnWrapperStyle={{ justifyContent: 'space-between' }}
+                contentContainerStyle={styles.listContent}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponent={(
+                    <View>
+                        <View style={styles.heroCard}>
+                            <View style={styles.heroRow}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.heroEyebrow}>Delivery in 10 min</Text>
+                                    <Text style={styles.heroTitle}>Groceries, snacks & essentials</Text>
+                                    <View style={styles.heroTags}>
+                                        <View style={styles.tagPill}>
+                                            <Ionicons name="flash" size={14} color={colors.accent} />
+                                            <Text style={styles.tagText}>Lightning fast</Text>
+                                        </View>
+                                        <View style={styles.tagPillMuted}>
+                                            <Ionicons name="pricetag" size={14} color={colors.textMuted} />
+                                            <Text style={styles.tagTextMuted}>Deals near you</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </View>
 
-            {/* Categories */}
-            <View style={styles.categoriesContainer}>
-                <FlatList
-                    data={categories?.filter(item => item != null) || []}
-                    renderItem={renderCategory}
-                    keyExtractor={(item) => item?.category?.toString() || Math.random().toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.categoriesList}
-                />
-            </View>
+                            <View style={styles.cardShell}>
+                                <View style={styles.searchContainer}>
+                                    <Ionicons name="search" size={20} color={colors.textMuted} style={styles.searchIcon} />
+                                    <TextInput
+                                        style={styles.searchInput}
+                                        placeholder="Search fruits, veggies, snacks..."
+                                        placeholderTextColor={colors.textMuted}
+                                        value={searchQuery}
+                                        onChangeText={setSearchQuery}
+                                        onSubmitEditing={() => handleSearch(searchQuery)}
+                                        returnKeyType="search"
+                                    />
+                                    {isSearching && <ActivityIndicator size="small" color={colors.primary} />}
+                                </View>
 
-            {/* Clear Filters */}
-            {(selectedCategory || searchQuery) && (
-                <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
-                    <Text style={styles.clearButtonText}>Clear Filters</Text>
-                </TouchableOpacity>
-            )}
+                                <FlatList
+                                    data={categories?.filter(item => item != null) || []}
+                                    renderItem={renderCategory}
+                                    keyExtractor={(item, index) => item?.category?.toString() || `cat-${index}`}
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={styles.categoriesList}
+                                />
 
-            {/* Featured Items */}
-            {featuredItems.length > 0 && !selectedCategory && !searchQuery && (
-                <View style={styles.featuredContainer}>
-                    <Text style={styles.sectionTitle}>Featured Items</Text>
-                    <FlatList
-                        data={featuredItems?.filter(item => item != null) || []}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.featuredList}
-                    />
-                </View>
-            )}
+                                {(selectedCategory || searchQuery) && (
+                                    <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
+                                        <Ionicons name="close" size={16} color={colors.primary} />
+                                        <Text style={styles.clearButtonText}>Clear filters</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        </View>
 
-            {/* All Items */}
-            <View style={styles.itemsContainer}>
-                <Text style={styles.sectionTitle}>
-                    {selectedCategory ? `${selectedCategory} Items` : searchQuery ? 'Search Results' : 'All Items'}
-                </Text>
-                <FlatList
-                    data={items?.filter(item => item != null) || []}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item?.id?.toString() || Math.random().toString()}
-                    numColumns={2}
-                    contentContainerStyle={styles.itemsList}
-                    showsVerticalScrollIndicator={false}
-                />
-            </View>
+                        {featuredItems.length > 0 && !selectedCategory && !searchQuery && (
+                            <View style={styles.featuredContainer}>
+                                <View style={styles.sectionHeaderRow}>
+                                    <Text style={styles.sectionTitle}>Trending near you</Text>
+                                    <Ionicons name="flame" size={18} color={colors.accent} />
+                                </View>
+                                <FlatList
+                                    data={featuredItems?.filter(item => item != null) || []}
+                                    renderItem={renderItem}
+                                    keyExtractor={(item, index) => item?.id?.toString() || `feat-${index}`}
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={styles.featuredList}
+                                />
+                            </View>
+                        )}
+
+                        <View style={styles.itemsHeaderRow}>
+                            <Text style={styles.sectionTitle}>
+                                {selectedCategory ? `${selectedCategory} picks` : searchQuery ? 'Search results' : 'All items'}
+                            </Text>
+                            <View style={styles.badgePill}>
+                                <Ionicons name="leaf" size={14} color={colors.primary} />
+                                <Text style={styles.badgePillText}>Fresh stock</Text>
+                            </View>
+                        </View>
+                    </View>
+                )}
+            />
         </View>
     );
 }
@@ -245,143 +290,236 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.page,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
+    heroCard: {
+        backgroundColor: colors.card,
+        borderRadius: radius.lg,
+        padding: spacing.lg,
+        ...shadow.card,
+    },
+    heroRow: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        gap: spacing.sm,
+    },
+    heroEyebrow: {
+        color: colors.accent,
+        fontSize: typography.small,
+        fontWeight: '700',
+        marginBottom: spacing.xs,
+    },
+    heroTitle: {
+        color: colors.text,
+        fontSize: typography.h1,
+        fontWeight: '800',
+        lineHeight: 32,
+        marginBottom: spacing.sm,
+    },
+    heroTags: {
+        flexDirection: 'row',
+        marginTop: spacing.xs,
+    },
+    tagPill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: spacing.sm,
+        paddingVertical: spacing.xs,
+        backgroundColor: '#FFF7EB',
+        borderRadius: radius.md,
+        marginRight: spacing.sm,
+    },
+    tagText: {
+        color: colors.accent,
+        fontSize: typography.small,
+        fontWeight: '700',
+    },
+    tagPillMuted: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: spacing.sm,
+        paddingVertical: spacing.xs,
+        backgroundColor: '#EEF2FF',
+        borderRadius: radius.md,
+        marginRight: spacing.sm,
+    },
+    tagTextMuted: {
+        color: colors.text,
+        fontSize: typography.small,
+        fontWeight: '600',
+    },
+    heroBadge: {
+        backgroundColor: colors.primary,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
+        borderRadius: radius.lg,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minWidth: 110,
+        ...shadow.soft,
+    },
+    heroBadgeText: {
+        color: colors.card,
+        fontWeight: '700',
+        fontSize: typography.small,
+        marginTop: 2,
+    },
+    cardShell: {
+        backgroundColor: colors.card,
+        marginTop: spacing.md,
+        borderRadius: radius.lg,
+        padding: spacing.md,
+        ...shadow.soft,
+    },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
-        margin: 15,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 10,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        backgroundColor: colors.page,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
+        borderRadius: radius.md,
     },
     searchIcon: {
-        marginRight: 10,
+        marginRight: spacing.sm,
     },
     searchInput: {
         flex: 1,
-        fontSize: 16,
-    },
-    categoriesContainer: {
-        marginBottom: 10,
+        fontSize: typography.body,
+        color: colors.text,
     },
     categoriesList: {
-        paddingHorizontal: 15,
+        paddingTop: spacing.md,
     },
     categoryChip: {
-        backgroundColor: '#fff',
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginRight: 10,
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        backgroundColor: colors.page,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.sm,
+        borderRadius: radius.lg,
+        marginRight: spacing.sm,
+        borderWidth: 1,
+        borderColor: colors.border,
     },
     categoryChipSelected: {
-        backgroundColor: '#007AFF',
+        backgroundColor: colors.primary,
+        borderColor: colors.primary,
     },
     categoryText: {
-        fontSize: 14,
-        color: '#333',
+        fontSize: typography.small,
+        color: colors.text,
+        fontWeight: '600',
     },
     categoryTextSelected: {
-        color: '#fff',
-        fontWeight: '600',
+        color: colors.card,
     },
     clearButton: {
-        alignSelf: 'center',
-        backgroundColor: '#fff',
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginBottom: 15,
-        elevation: 1,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'flex-start',
+        backgroundColor: '#E8F7EF',
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.xs,
+        borderRadius: radius.lg,
+        marginTop: spacing.sm,
     },
     clearButtonText: {
-        color: '#007AFF',
-        fontWeight: '600',
+        color: colors.primary,
+        fontWeight: '700',
+        marginLeft: spacing.xs,
     },
     featuredContainer: {
-        marginBottom: 20,
+        marginTop: spacing.md,
+        paddingHorizontal: spacing.md,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginHorizontal: 15,
-        marginBottom: 10,
+        fontSize: typography.h2,
+        fontWeight: '800',
+        color: colors.text,
+    },
+    sectionHeaderRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: spacing.sm,
+        marginBottom: spacing.sm,
     },
     featuredList: {
-        paddingHorizontal: 15,
+        paddingHorizontal: spacing.xs,
     },
-    itemsContainer: {
-        flex: 1,
+    listContent: {
+        paddingHorizontal: spacing.md,
+        paddingBottom: spacing.lg,
+        paddingTop: spacing.md,
     },
-    itemsList: {
-        padding: 15,
+    itemsHeaderRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: spacing.sm,
+        marginBottom: spacing.sm,
+        marginTop: spacing.md,
     },
     itemCard: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 15,
-        margin: 5,
-        flex: 1,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        backgroundColor: colors.card,
+        borderRadius: radius.lg,
+        padding: spacing.md,
+        marginBottom: spacing.md,
+        flexBasis: '48%',
+        ...shadow.soft,
     },
     itemImage: {
-        marginBottom: 10,
+        marginBottom: spacing.sm,
+        alignSelf: 'center',
     },
     itemInfo: {
         flex: 1,
     },
     itemName: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 5,
+        fontSize: typography.body,
+        fontWeight: '700',
+        color: colors.text,
+        marginBottom: spacing.xs,
     },
     itemPrice: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#007AFF',
-        marginBottom: 5,
+        fontSize: typography.h3,
+        fontWeight: '800',
+        color: colors.primary,
+        marginBottom: spacing.xs,
     },
     itemDiscount: {
-        fontSize: 12,
-        color: '#28a745',
-        fontWeight: '600',
+        fontSize: typography.small,
+        color: colors.accent,
+        fontWeight: '700',
     },
     addButton: {
         position: 'absolute',
-        top: 10,
-        right: 10,
-        backgroundColor: '#007AFF',
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        top: spacing.sm,
+        right: spacing.sm,
+        backgroundColor: colors.primary,
+        width: 34,
+        height: 34,
+        borderRadius: 17,
         justifyContent: 'center',
         alignItems: 'center',
+        ...shadow.soft,
+    },
+    badgePill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#E8F7EF',
+        paddingHorizontal: spacing.sm,
+        paddingVertical: spacing.xs,
+        borderRadius: radius.lg,
+    },
+    badgePillText: {
+        color: colors.primary,
+        fontWeight: '700',
+        fontSize: typography.small,
     },
 });

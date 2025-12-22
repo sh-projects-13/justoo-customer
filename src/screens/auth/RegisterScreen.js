@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
+import { colors, spacing, typography, radius, shadow } from '../../theme';
 
 export default function RegisterScreen() {
     const [formData, setFormData] = useState({
@@ -68,19 +69,21 @@ export default function RegisterScreen() {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Create Account</Text>
-                    <Text style={styles.subtitle}>Join Justoo for fast delivery</Text>
+            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                <View style={styles.hero}>
+                    <Text style={styles.eyebrow}>JUSTOO</Text>
+                    <Text style={styles.title}>Create your account</Text>
+                    <Text style={styles.subtitle}>Unlock fast delivery and curated picks</Text>
                 </View>
 
-                <View style={styles.form}>
+                <View style={styles.formCard}>
                     <Text style={styles.label}>Full Name *</Text>
                     <TextInput
                         style={styles.input}
                         value={formData.name}
                         onChangeText={(value) => handleInputChange('name', value)}
                         placeholder="Enter your full name"
+                        placeholderTextColor={colors.textMuted}
                         autoCapitalize="words"
                     />
 
@@ -90,6 +93,7 @@ export default function RegisterScreen() {
                         value={formData.phone}
                         onChangeText={(value) => handleInputChange('phone', value)}
                         placeholder="Enter your phone number"
+                        placeholderTextColor={colors.textMuted}
                         keyboardType="phone-pad"
                     />
 
@@ -99,6 +103,7 @@ export default function RegisterScreen() {
                         value={formData.email}
                         onChangeText={(value) => handleInputChange('email', value)}
                         placeholder="Enter your email"
+                        placeholderTextColor={colors.textMuted}
                         keyboardType="email-address"
                         autoCapitalize="none"
                     />
@@ -109,6 +114,7 @@ export default function RegisterScreen() {
                         value={formData.password}
                         onChangeText={(value) => handleInputChange('password', value)}
                         placeholder="Create a password"
+                        placeholderTextColor={colors.textMuted}
                         secureTextEntry
                         autoCapitalize="none"
                     />
@@ -119,9 +125,9 @@ export default function RegisterScreen() {
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <ActivityIndicator color="#fff" />
+                            <ActivityIndicator color={colors.card} />
                         ) : (
-                            <Text style={styles.buttonText}>Register</Text>
+                            <Text style={styles.buttonText}>Create account</Text>
                         )}
                     </TouchableOpacity>
 
@@ -142,70 +148,81 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.page,
     },
     scrollContainer: {
         flexGrow: 1,
         justifyContent: 'center',
-        padding: 20,
+        padding: spacing.lg,
     },
-    header: {
-        alignItems: 'center',
-        marginBottom: 40,
+    hero: {
+        marginBottom: spacing.lg,
+    },
+    eyebrow: {
+        color: colors.accent,
+        fontWeight: '800',
+        letterSpacing: 1,
+        marginBottom: spacing.xs,
     },
     title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
+        fontSize: typography.h1,
+        fontWeight: '800',
+        color: colors.text,
+        marginBottom: spacing.xs,
+        lineHeight: 32,
     },
     subtitle: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: typography.body,
+        color: colors.textMuted,
     },
-    form: {
-        width: '100%',
+    formCard: {
+        backgroundColor: colors.card,
+        borderRadius: radius.lg,
+        padding: spacing.lg,
+        ...shadow.card,
     },
     label: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 8,
+        fontSize: typography.body,
+        fontWeight: '700',
+        color: colors.text,
+        marginBottom: spacing.xs,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        marginBottom: 20,
-        backgroundColor: '#f9f9f9',
+        borderColor: colors.border,
+        borderRadius: radius.md,
+        padding: spacing.md,
+        fontSize: typography.body,
+        marginBottom: spacing.md,
+        backgroundColor: colors.page,
+        color: colors.text,
     },
     button: {
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-        padding: 15,
+        backgroundColor: colors.primary,
+        borderRadius: radius.md,
+        padding: spacing.md,
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: spacing.sm,
+        ...shadow.soft,
     },
     buttonDisabled: {
-        backgroundColor: '#ccc',
+        backgroundColor: colors.border,
     },
     buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
+        color: colors.card,
+        fontSize: typography.body,
+        fontWeight: '800',
     },
     linkButton: {
         alignItems: 'center',
-        marginTop: 20,
+        marginTop: spacing.md,
     },
     linkText: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: typography.body,
+        color: colors.textMuted,
     },
     linkTextBold: {
-        color: '#007AFF',
-        fontWeight: '600',
+        color: colors.primary,
+        fontWeight: '800',
     },
 });

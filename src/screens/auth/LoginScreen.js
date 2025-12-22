@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
+import { colors, spacing, typography, radius, shadow } from '../../theme';
 
 export default function LoginScreen() {
     const [phone, setPhone] = useState('');
@@ -46,19 +47,21 @@ export default function LoginScreen() {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Welcome to Justoo</Text>
-                    <Text style={styles.subtitle}>10-minute delivery service</Text>
+            <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+                <View style={styles.hero}>
+                    <Text style={styles.eyebrow}>JUSTOO</Text>
+                    <Text style={styles.title}>Login to speed-run groceries</Text>
+                    <Text style={styles.subtitle}>10-minute delivery • curated deals</Text>
                 </View>
 
-                <View style={styles.form}>
+                <View style={styles.formCard}>
                     <Text style={styles.label}>Phone Number</Text>
                     <TextInput
                         style={styles.input}
                         value={phone}
                         onChangeText={setPhone}
                         placeholder="Enter your phone number"
+                        placeholderTextColor={colors.textMuted}
                         keyboardType="phone-pad"
                         autoCapitalize="none"
                     />
@@ -69,6 +72,7 @@ export default function LoginScreen() {
                         value={password}
                         onChangeText={setPassword}
                         placeholder="Enter your password"
+                        placeholderTextColor={colors.textMuted}
                         secureTextEntry
                         autoCapitalize="none"
                     />
@@ -79,7 +83,7 @@ export default function LoginScreen() {
                         disabled={isLoading}
                     >
                         {isLoading ? (
-                            <ActivityIndicator color="#fff" />
+                            <ActivityIndicator color={colors.card} />
                         ) : (
                             <Text style={styles.buttonText}>Login</Text>
                         )}
@@ -102,70 +106,81 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.page,
     },
     scrollContainer: {
         flexGrow: 1,
         justifyContent: 'center',
-        padding: 20,
+        padding: spacing.lg,
     },
-    header: {
-        alignItems: 'center',
-        marginBottom: 40,
+    hero: {
+        marginBottom: spacing.lg,
+    },
+    eyebrow: {
+        color: colors.accent,
+        fontWeight: '800',
+        letterSpacing: 1,
+        marginBottom: spacing.xs,
     },
     title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
+        fontSize: typography.h1,
+        fontWeight: '800',
+        color: colors.text,
+        marginBottom: spacing.xs,
+        lineHeight: 32,
     },
     subtitle: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: typography.body,
+        color: colors.textMuted,
     },
-    form: {
-        width: '100%',
+    formCard: {
+        backgroundColor: colors.card,
+        borderRadius: radius.lg,
+        padding: spacing.lg,
+        ...shadow.card,
     },
     label: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 8,
+        fontSize: typography.body,
+        fontWeight: '700',
+        color: colors.text,
+        marginBottom: spacing.xs,
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        marginBottom: 20,
-        backgroundColor: '#f9f9f9',
+        borderColor: colors.border,
+        borderRadius: radius.md,
+        padding: spacing.md,
+        fontSize: typography.body,
+        marginBottom: spacing.md,
+        backgroundColor: colors.page,
+        color: colors.text,
     },
     button: {
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-        padding: 15,
+        backgroundColor: colors.primary,
+        borderRadius: radius.md,
+        padding: spacing.md,
         alignItems: 'center',
-        marginTop: 10,
+        marginTop: spacing.sm,
+        ...shadow.soft,
     },
     buttonDisabled: {
-        backgroundColor: '#ccc',
+        backgroundColor: colors.border,
     },
     buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
+        color: colors.card,
+        fontSize: typography.body,
+        fontWeight: '800',
     },
     linkButton: {
         alignItems: 'center',
-        marginTop: 20,
+        marginTop: spacing.md,
     },
     linkText: {
-        fontSize: 16,
-        color: '#666',
+        fontSize: typography.body,
+        color: colors.textMuted,
     },
     linkTextBold: {
-        color: '#007AFF',
-        fontWeight: '600',
+        color: colors.primary,
+        fontWeight: '800',
     },
 });

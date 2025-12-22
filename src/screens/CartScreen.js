@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { cartAPI } from '../services/api';
 import ItemImage from '../components/ItemImage';
+import { colors, spacing, typography, radius, shadow } from '../theme';
 
 export default function CartScreen() {
     const [cart, setCart] = useState(null);
@@ -172,7 +173,7 @@ export default function CartScreen() {
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
+                <ActivityIndicator size="large" color={colors.primary} />
             </View>
         );
     }
@@ -180,14 +181,14 @@ export default function CartScreen() {
     if (!cart || !cart.items || cart.items.length === 0) {
         return (
             <View style={styles.emptyContainer}>
-                <Ionicons name="basket-outline" size={80} color="#ccc" />
+                <Ionicons name="basket-outline" size={80} color={colors.border} />
                 <Text style={styles.emptyText}>Your cart is empty</Text>
                 <Text style={styles.emptySubtext}>Add some items to get started</Text>
                 <TouchableOpacity
                     style={styles.shopButton}
                     onPress={() => navigation.navigate('Home')}
                 >
-                    <Text style={styles.shopButtonText}>Start Shopping</Text>
+                    <Text style={styles.shopButtonText}>Browse items</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -195,7 +196,6 @@ export default function CartScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Cart Items */}
             <FlatList
                 data={cart?.items?.filter(item => item != null) || []}
                 renderItem={renderCartItem}
@@ -204,24 +204,24 @@ export default function CartScreen() {
                 showsVerticalScrollIndicator={false}
             />
 
-            {/* Cart Summary */}
-            <View style={styles.summaryContainer}>
+            <View style={styles.summaryShell}>
                 <View style={styles.summaryRow}>
-                    <Text style={styles.summaryLabel}>Items ({cart?.itemCount || 0})</Text>
+                    <View>
+                        <Text style={styles.summaryLabel}>Subtotal</Text>
+                        <Text style={styles.summarySub}>Items {cart?.itemCount || 0}</Text>
+                    </View>
                     <Text style={styles.summaryValue}>₹{cart?.total || 0}</Text>
                 </View>
-
                 <TouchableOpacity style={styles.clearButton} onPress={clearCart}>
-                    <Text style={styles.clearButtonText}>Clear Cart</Text>
+                    <Ionicons name="trash" size={16} color={colors.danger} />
+                    <Text style={styles.clearButtonText}>Clear cart</Text>
                 </TouchableOpacity>
-            </View>
 
-            {/* Checkout Button */}
-            <View style={styles.checkoutContainer}>
                 <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
                     <Text style={styles.checkoutButtonText}>
-                        Proceed to Checkout • ₹{cart.total}
+                        Checkout • ₹{cart.total}
                     </Text>
+                    <Ionicons name="arrow-forward" size={18} color={colors.card} />
                 </TouchableOpacity>
             </View>
         </View>
@@ -231,7 +231,7 @@ export default function CartScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.page,
     },
     loadingContainer: {
         flex: 1,
@@ -245,133 +245,142 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     emptyText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: typography.h2,
+        fontWeight: '800',
+        color: colors.text,
         marginTop: 20,
         marginBottom: 10,
     },
     emptySubtext: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 30,
+        fontSize: typography.body,
+        color: colors.textMuted,
+        marginBottom: spacing.lg,
     },
     shopButton: {
-        backgroundColor: '#007AFF',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 8,
+        backgroundColor: colors.primary,
+        paddingHorizontal: spacing.lg,
+        paddingVertical: spacing.sm,
+        borderRadius: radius.md,
+        ...shadow.soft,
     },
     shopButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
+        color: colors.card,
+        fontSize: typography.body,
+        fontWeight: '800',
     },
     cartList: {
-        padding: 15,
+        padding: spacing.md,
     },
     cartItem: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 15,
-        marginBottom: 10,
+        backgroundColor: colors.card,
+        borderRadius: radius.lg,
+        padding: spacing.md,
+        marginBottom: spacing.md,
         flexDirection: 'row',
         alignItems: 'center',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        ...shadow.soft,
     },
     itemImage: {
-        marginRight: 15,
+        marginRight: spacing.md,
     },
     itemDetails: {
         flex: 1,
     },
     itemName: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 5,
+        fontSize: typography.body,
+        fontWeight: '700',
+        color: colors.text,
+        marginBottom: spacing.xs,
     },
     itemPrice: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#007AFF',
+        fontSize: typography.h3,
+        fontWeight: '800',
+        color: colors.primary,
         marginBottom: 2,
     },
     itemUnit: {
-        fontSize: 12,
-        color: '#666',
+        fontSize: typography.small,
+        color: colors.textMuted,
     },
     quantityControls: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginRight: 10,
+        marginRight: spacing.sm,
     },
     quantityButton: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
+        width: 34,
+        height: 34,
+        borderRadius: 17,
         borderWidth: 1,
-        borderColor: '#007AFF',
+        borderColor: colors.border,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: colors.card,
+        ...shadow.soft,
     },
     quantityText: {
-        fontSize: 16,
-        fontWeight: '600',
-        marginHorizontal: 15,
+        fontSize: typography.h3,
+        fontWeight: '800',
+        marginHorizontal: spacing.md,
         minWidth: 30,
         textAlign: 'center',
+        color: colors.text,
     },
     removeButton: {
-        padding: 5,
+        padding: spacing.xs,
     },
     summaryContainer: {
         backgroundColor: '#fff',
-        padding: 15,
+    },
+    summaryShell: {
+        backgroundColor: colors.card,
+        padding: spacing.md,
         borderTopWidth: 1,
-        borderTopColor: '#eee',
+        borderTopColor: colors.border,
+        ...shadow.soft,
     },
     summaryRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
     },
     summaryLabel: {
-        fontSize: 16,
-        color: '#333',
+        fontSize: typography.body,
+        color: colors.text,
+        fontWeight: '700',
+    },
+    summarySub: {
+        fontSize: typography.small,
+        color: colors.textMuted,
     },
     summaryValue: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: typography.h2,
+        fontWeight: '800',
+        color: colors.text,
     },
     clearButton: {
-        alignSelf: 'flex-end',
+        alignSelf: 'flex-start',
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: spacing.xs,
     },
     clearButtonText: {
-        color: '#ff4444',
-        fontSize: 14,
-    },
-    checkoutContainer: {
-        backgroundColor: '#fff',
-        padding: 15,
-        borderTopWidth: 1,
-        borderTopColor: '#eee',
+        color: colors.danger,
+        fontSize: typography.body,
+        fontWeight: '700',
     },
     checkoutButton: {
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-        padding: 15,
+        backgroundColor: colors.primary,
+        borderRadius: radius.md,
+        padding: spacing.md,
         alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        ...shadow.card,
     },
     checkoutButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        color: colors.card,
+        fontSize: typography.body,
+        fontWeight: '800',
     },
 });

@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
+import { colors } from '../theme';
 
 // Import screens
 import HomeScreen from '../screens/HomeScreen';
@@ -79,14 +80,21 @@ export default function TabNavigator() {
 
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
-                tabBarActiveTintColor: '#007AFF',
-                tabBarInactiveTintColor: 'gray',
+                tabBarActiveTintColor: colors.primary,
+                tabBarInactiveTintColor: colors.textMuted,
                 headerStyle: {
-                    backgroundColor: '#fff',
+                    backgroundColor: colors.card,
                 },
-                headerTintColor: '#333',
+                headerTintColor: colors.text,
                 headerTitleStyle: {
-                    fontWeight: 'bold',
+                    fontWeight: '800',
+                },
+                tabBarStyle: {
+                    backgroundColor: colors.card,
+                    borderTopColor: 'transparent',
+                    height: 62,
+                    paddingBottom: 10,
+                    paddingTop: 8,
                 },
             })}
         >

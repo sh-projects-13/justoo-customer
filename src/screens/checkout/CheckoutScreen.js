@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { cartAPI, addressesAPI, ordersAPI } from '../../services/api';
+import { colors, spacing, typography, radius, shadow } from '../../theme';
 
 export default function CheckoutScreen() {
     const [cartSummary, setCartSummary] = useState(null);
@@ -134,7 +135,7 @@ export default function CheckoutScreen() {
     if (isLoading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
+                <ActivityIndicator size="large" color={colors.primary} />
             </View>
         );
     }
@@ -154,23 +155,33 @@ export default function CheckoutScreen() {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            {/* Header */}
+        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.header}>
                 <TouchableOpacity
-                    style={styles.backButton}
+                    style={styles.iconButton}
                     onPress={() => navigation.goBack()}
                 >
-                    <Ionicons name="arrow-back" size={24} color="#333" />
+                    <Ionicons name="arrow-back" size={20} color={colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Checkout</Text>
                 <View style={{ width: 40 }} />
             </View>
 
+            <View style={styles.topBar}>
+                <View>
+                    <Text style={styles.topLabel}>Estimated arrival</Text>
+                    <Text style={styles.topValue}>10 - 15 mins</Text>
+                </View>
+                <View style={styles.topChip}>
+                    <Ionicons name="shield-checkmark" size={16} color={colors.card} />
+                    <Text style={styles.topChipText}>Safe delivery</Text>
+                </View>
+            </View>
+
             {/* Delivery Address */}
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                    <Ionicons name="location" size={20} color="#007AFF" />
+                    <Ionicons name="location" size={20} color={colors.primary} />
                     <Text style={styles.sectionTitle}>Delivery Address</Text>
                 </View>
 
@@ -178,7 +189,7 @@ export default function CheckoutScreen() {
                     <View style={styles.emptyAddress}>
                         <Text style={styles.emptyAddressText}>No addresses found</Text>
                         <TouchableOpacity style={styles.addAddressButton}>
-                            <Text style={styles.addAddressText}>Add Address</Text>
+                            <Text style={styles.addAddressText}>Add address</Text>
                         </TouchableOpacity>
                     </View>
                 ) : (
@@ -211,7 +222,7 @@ export default function CheckoutScreen() {
             {/* Order Summary */}
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                    <Ionicons name="basket" size={20} color="#007AFF" />
+                    <Ionicons name="basket" size={20} color={colors.primary} />
                     <Text style={styles.sectionTitle}>Order Summary</Text>
                 </View>
 
@@ -231,7 +242,7 @@ export default function CheckoutScreen() {
             {/* Payment Method */}
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                    <Ionicons name="card" size={20} color="#007AFF" />
+                    <Ionicons name="card" size={20} color={colors.primary} />
                     <Text style={styles.sectionTitle}>Payment Method</Text>
                 </View>
 
@@ -242,10 +253,10 @@ export default function CheckoutScreen() {
                     ]}
                     onPress={() => setPaymentMethod('cash')}
                 >
-                    <Ionicons name="cash" size={20} color="#28a745" />
+                    <Ionicons name="cash" size={20} color={colors.success} />
                     <Text style={styles.paymentText}>Cash on Delivery</Text>
                     {paymentMethod === 'cash' && (
-                        <Ionicons name="checkmark-circle" size={20} color="#007AFF" />
+                        <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
                     )}
                 </TouchableOpacity>
 
@@ -256,10 +267,10 @@ export default function CheckoutScreen() {
                     ]}
                     onPress={() => setPaymentMethod('online')}
                 >
-                    <Ionicons name="card" size={20} color="#007AFF" />
+                    <Ionicons name="card" size={20} color={colors.primary} />
                     <Text style={styles.paymentText}>Online Payment</Text>
                     {paymentMethod === 'online' && (
-                        <Ionicons name="checkmark-circle" size={20} color="#007AFF" />
+                        <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
                     )}
                 </TouchableOpacity>
             </View>
@@ -291,10 +302,10 @@ export default function CheckoutScreen() {
                     disabled={!selectedAddress || isPlacingOrder}
                 >
                     {isPlacingOrder ? (
-                        <ActivityIndicator color="#fff" />
+                        <ActivityIndicator color={colors.card} />
                     ) : (
                         <>
-                            <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                            <Ionicons name="checkmark-circle" size={20} color={colors.card} />
                             <Text style={styles.placeOrderText}>
                                 Place Order • ₹{cartSummary.total}
                             </Text>
@@ -309,7 +320,7 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: colors.page,
     },
     loadingContainer: {
         flex: 1,
@@ -320,216 +331,253 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        padding: spacing.lg,
     },
     emptyText: {
-        fontSize: 18,
-        color: '#666',
-        marginBottom: 20,
+        fontSize: typography.h2,
+        color: colors.text,
+        marginBottom: spacing.md,
+        fontWeight: '800',
     },
     shopButton: {
-        backgroundColor: '#007AFF',
-        paddingHorizontal: 30,
-        paddingVertical: 12,
-        borderRadius: 8,
+        backgroundColor: colors.primary,
+        paddingHorizontal: spacing.lg,
+        paddingVertical: spacing.sm,
+        borderRadius: radius.md,
+        ...shadow.soft,
     },
     shopButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '600',
+        color: colors.card,
+        fontSize: typography.body,
+        fontWeight: '800',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#fff',
-        padding: 15,
+        paddingHorizontal: spacing.md,
         paddingTop: 50,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        paddingBottom: spacing.md,
     },
-    backButton: {
-        padding: 5,
+    iconButton: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        backgroundColor: colors.card,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...shadow.soft,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: typography.h2,
+        fontWeight: '800',
+        color: colors.text,
     },
-    section: {
-        backgroundColor: '#fff',
-        margin: 10,
-        borderRadius: 10,
-        padding: 15,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+    topBar: {
+        backgroundColor: colors.card,
+        marginHorizontal: spacing.md,
+        marginBottom: spacing.md,
+        borderRadius: radius.lg,
+        padding: spacing.md,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        ...shadow.card,
     },
-    sectionHeader: {
+    topLabel: {
+        color: colors.textMuted,
+        fontSize: typography.small,
+    },
+    topValue: {
+        color: colors.text,
+        fontSize: typography.h3,
+        fontWeight: '800',
+        marginTop: spacing.xs,
+    },
+    topChip: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 15,
+        backgroundColor: colors.primary,
+        paddingHorizontal: spacing.md,
+        paddingVertical: spacing.xs,
+        borderRadius: radius.lg,
+        ...shadow.soft,
+    },
+    topChipText: {
+        color: colors.card,
+        fontWeight: '700',
+        fontSize: typography.small,
+    },
+    section: {
+        backgroundColor: colors.card,
+        marginHorizontal: spacing.md,
+        marginBottom: spacing.md,
+        borderRadius: radius.lg,
+        padding: spacing.md,
+        ...shadow.card,
+    },
+    sectionHeader: {
+        marginBottom: spacing.sm,
+        alignItems: 'center',
+        marginBottom: spacing.sm,
     },
     sectionTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        marginLeft: 10,
+        fontSize: typography.h3,
+        fontWeight: '800',
+        color: colors.text,
+        marginLeft: spacing.sm,
     },
     emptyAddress: {
         alignItems: 'center',
-        padding: 20,
+        padding: spacing.md,
     },
     emptyAddressText: {
-        fontSize: 16,
-        color: '#666',
-        marginBottom: 15,
+        fontSize: typography.body,
+        color: colors.textMuted,
+        marginBottom: spacing.sm,
     },
     addAddressButton: {
-        backgroundColor: '#007AFF',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 8,
+        backgroundColor: colors.primary,
+        paddingHorizontal: spacing.lg,
+        paddingVertical: spacing.sm,
+        borderRadius: radius.md,
     },
     addAddressText: {
-        color: '#fff',
-        fontWeight: '600',
+        color: colors.card,
+        fontWeight: '700',
     },
     addressCard: {
         borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 15,
-        marginRight: 10,
-        minWidth: 200,
+        borderColor: colors.border,
+        borderRadius: radius.md,
+        padding: spacing.md,
+        marginRight: spacing.sm,
+        minWidth: 220,
     },
     addressCardSelected: {
-        borderColor: '#007AFF',
-        backgroundColor: '#f0f8ff',
+        borderColor: colors.primary,
+        backgroundColor: '#E8F7EF',
     },
     addressType: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 5,
+        fontSize: typography.body,
+        fontWeight: '700',
+        color: colors.text,
+        marginBottom: spacing.xs,
     },
     addressText: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 5,
+        fontSize: typography.body,
+        color: colors.textMuted,
+        marginBottom: spacing.xs,
     },
     landmarkText: {
-        fontSize: 12,
-        color: '#999',
+        fontSize: typography.small,
+        color: colors.textMuted,
     },
     orderItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingVertical: spacing.sm,
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: colors.border,
     },
     itemInfo: {
         flex: 1,
     },
     itemName: {
-        fontSize: 14,
-        color: '#333',
-        marginBottom: 5,
+        fontSize: typography.body,
+        color: colors.text,
+        marginBottom: spacing.xs,
+        fontWeight: '700',
     },
     itemQuantity: {
-        fontSize: 12,
-        color: '#666',
+        fontSize: typography.small,
+        color: colors.textMuted,
     },
     itemPrice: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#007AFF',
+        fontSize: typography.body,
+        fontWeight: '800',
+        color: colors.primary,
     },
     paymentOption: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 15,
+        padding: spacing.md,
         borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        marginBottom: 10,
+        borderColor: colors.border,
+        borderRadius: radius.md,
+        marginBottom: spacing.sm,
     },
     paymentOptionSelected: {
-        borderColor: '#007AFF',
-        backgroundColor: '#f0f8ff',
+        borderColor: colors.primary,
+        backgroundColor: '#E8F7EF',
     },
     paymentText: {
-        fontSize: 16,
-        color: '#333',
-        marginLeft: 10,
+        fontSize: typography.body,
+        color: colors.text,
+        marginLeft: spacing.sm,
         flex: 1,
+        fontWeight: '700',
     },
     totalSection: {
-        backgroundColor: '#fff',
-        margin: 10,
-        borderRadius: 10,
-        padding: 15,
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        backgroundColor: colors.card,
+        marginHorizontal: spacing.md,
+        marginBottom: spacing.md,
+        borderRadius: radius.lg,
+        padding: spacing.md,
+        ...shadow.card,
     },
     totalRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: spacing.sm,
     },
     totalLabel: {
-        fontSize: 14,
-        color: '#666',
+        fontSize: typography.body,
+        color: colors.textMuted,
     },
     totalValue: {
-        fontSize: 14,
-        color: '#333',
+        fontSize: typography.body,
+        color: colors.text,
+        fontWeight: '700',
     },
     finalTotal: {
         borderTopWidth: 1,
-        borderTopColor: '#eee',
-        paddingTop: 10,
-        marginTop: 10,
+        borderTopColor: colors.border,
+        paddingTop: spacing.sm,
+        marginTop: spacing.sm,
     },
     finalTotalLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: typography.h3,
+        fontWeight: '800',
+        color: colors.text,
     },
     finalTotalValue: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#007AFF',
+        fontSize: typography.h2,
+        fontWeight: '800',
+        color: colors.primary,
     },
     buttonContainer: {
-        padding: 15,
+        padding: spacing.md,
     },
     placeOrderButton: {
-        backgroundColor: '#007AFF',
-        borderRadius: 8,
-        padding: 15,
+        backgroundColor: colors.primary,
+        borderRadius: radius.md,
+        padding: spacing.md,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: spacing.xs,
+        ...shadow.card,
     },
     buttonDisabled: {
-        backgroundColor: '#ccc',
+        backgroundColor: colors.border,
     },
     placeOrderText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginLeft: 10,
+        color: colors.card,
+        fontSize: typography.body,
+        fontWeight: '800',
+        marginLeft: spacing.xs,
     },
 });

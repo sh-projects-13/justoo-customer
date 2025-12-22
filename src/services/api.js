@@ -3,15 +3,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Create axios instance
 const api = axios.create({
-<<<<<<< HEAD
     baseURL: `${process.env.EXPO_PUBLIC_API_BASE_URL}/api/customer`,
     timeout: 30000,
-=======
-    baseURL: __DEV__
-        ? 'https://f165d7f4c92b.ngrok-free.app/api'  // Development
-        : 'https://your-production-api.com/api', // Production
-    timeout: 10000,
->>>>>>> 933f83f4fe649396f28479e4fde3d3598685e163
     headers: {
         'Content-Type': 'application/json',
     },
