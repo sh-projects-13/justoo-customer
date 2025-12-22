@@ -21,11 +21,15 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "newArchEnabled": false
+      "newArchEnabled": false,
+      "package": "com.shwetanshusinha.justoocustomer"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-asset", "expo-font"]
+    "plugins": [
+      "expo-asset",
+      "expo-font"
+    ]
   }
 }
