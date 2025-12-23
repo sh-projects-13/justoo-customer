@@ -1,14 +1,14 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { StatusBar } from 'expo-status-bar';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { StatusBar } from "expo-status-bar";
 
 // Import navigators
-import AuthNavigator from './navigation/AuthNavigator';
-import TabNavigator from './navigation/TabNavigator';
+import AuthNavigator from "./navigation/AuthNavigator";
+import TabNavigator from "./navigation/TabNavigator";
 
 // Import context
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const Stack = createStackNavigator();
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -9,18 +9,18 @@ import {
     ActivityIndicator,
     Alert,
     Image,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { itemsAPI, cartAPI } from '../services/api';
-import ItemImage from '../components/ItemImage';
-import { colors, spacing, typography, radius, shadow } from '../theme';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { itemsAPI, cartAPI } from "../services/api";
+import ItemImage from "../components/ItemImage";
+import { colors, spacing, typography, radius, shadow } from "../theme";
 
 export default function HomeScreen() {
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [featuredItems, setFeaturedItems] = useState([]);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSearching, setIsSearching] = useState(false);
@@ -33,11 +33,12 @@ export default function HomeScreen() {
     const loadInitialData = async () => {
         try {
             setIsLoading(true);
-            const [itemsResponse, categoriesResponse, featuredResponse] = await Promise.all([
-                itemsAPI.getItems({ limit: 20 }),
-                itemsAPI.getCategories(),
-                itemsAPI.getFeaturedItems(),
-            ]);
+            const [itemsResponse, categoriesResponse, featuredResponse] =
+                await Promise.all([
+                    itemsAPI.getItems({ limit: 20 }),
+                    itemsAPI.getCategories(),
+                    itemsAPI.getFeaturedItems(),
+                ]);
 
             if (itemsResponse.data.success) {
                 setItems(itemsResponse.data.data.items);
@@ -49,8 +50,8 @@ export default function HomeScreen() {
                 setFeaturedItems(featuredResponse.data.data);
             }
         } catch (error) {
-            console.error('Error loading data:', error);
-            Alert.alert('Error', 'Failed to load data');
+            console.error("Error loading data:", error);
+            Alert.alert("Error", "Failed to load data");
         } finally {
             setIsLoading(false);
         }
@@ -58,7 +59,7 @@ export default function HomeScreen() {
 
     const handleSearch = async (query) => {
         if (!query.trim()) {
-            setSearchQuery('');
+            setSearchQuery("");
             loadInitialData();
             return;
         }
@@ -71,8 +72,8 @@ export default function HomeScreen() {
                 setSearchQuery(query);
             }
         } catch (error) {
-            console.error('Search error:', error);
-            Alert.alert('Error', 'Search failed');
+            console.error("Search error:", error);
+            Alert.alert("Error", "Search failed");
         } finally {
             setIsSearching(false);
         }
@@ -82,13 +83,15 @@ export default function HomeScreen() {
         setSelectedCategory(category);
         try {
             setIsSearching(true);
-            const response = await itemsAPI.getItemsByCategory(category, { limit: 20 });
+            const response = await itemsAPI.getItemsByCategory(category, {
+                limit: 20,
+            });
             if (response.data.success) {
                 setItems(response.data.data.items || []);
             }
         } catch (error) {
-            console.error('Category filter error:', error);
-            Alert.alert('Error', 'Could not load this category');
+            console.error("Category filter error:", error);
+            Alert.alert("Error", "Could not load this category");
         } finally {
             setIsSearching(false);
         }
@@ -96,7 +99,7 @@ export default function HomeScreen() {
 
     const addToCart = async (item) => {
         if (!item || !item.id) {
-            Alert.alert('Error', 'Invalid item data');
+            Alert.alert("Error", "Invalid item data");
             return;
         }
 
@@ -107,25 +110,25 @@ export default function HomeScreen() {
             });
 
             if (response.data.success) {
-                Alert.alert('Success', 'Item added to cart!', [
-                    { text: 'Continue Shopping', style: 'cancel' },
+                Alert.alert("Success", "Item added to cart!", [
+                    { text: "Continue Shopping", style: "cancel" },
                     {
-                        text: 'View Cart',
-                        onPress: () => navigation.navigate('Cart')
-                    }
+                        text: "View Cart",
+                        onPress: () => navigation.navigate("Cart"),
+                    },
                 ]);
             } else {
-                Alert.alert('Error', response.data.message);
+                Alert.alert("Error", response.data.message);
             }
         } catch (error) {
-            console.error('Error adding to cart:', error);
-            Alert.alert('Error', 'Failed to add item to cart');
+            console.error("Error adding to cart:", error);
+            Alert.alert("Error", "Failed to add item to cart");
         }
     };
 
     const clearFilters = () => {
         setSelectedCategory(null);
-        setSearchQuery('');
+        setSearchQuery("");
         loadInitialData();
     };
 
@@ -137,7 +140,10 @@ export default function HomeScreen() {
         return (
             <TouchableOpacity
                 style={styles.itemCard}
-                onPress={() => navigation.navigate('ProductDetail', { item })}
+                onPress={() => {
+                    // console.log(item);
+                    navigation.navigate("ProductDetail", { item });
+                }}
             >
                 <ItemImage item={item} size={60} style={styles.itemImage} />
                 <View style={styles.itemInfo}>
@@ -151,7 +157,10 @@ export default function HomeScreen() {
                         </Text>
                     )}
                 </View>
-                <TouchableOpacity style={styles.addButton} onPress={() => addToCart(item)}>
+                <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => addToCart(item)}
+                >
                     <Ionicons name="add" size={20} color="#fff" />
                 </TouchableOpacity>
             </TouchableOpacity>
@@ -167,14 +176,16 @@ export default function HomeScreen() {
             <TouchableOpacity
                 style={[
                     styles.categoryChip,
-                    selectedCategory === item.category && styles.categoryChipSelected,
+                    selectedCategory === item.category &&
+                        styles.categoryChipSelected,
                 ]}
                 onPress={() => handleCategorySelect(item.category)}
             >
                 <Text
                     style={[
                         styles.categoryText,
-                        selectedCategory === item.category && styles.categoryTextSelected,
+                        selectedCategory === item.category &&
+                            styles.categoryTextSelected,
                     ]}
                 >
                     {item.category}
@@ -194,28 +205,46 @@ export default function HomeScreen() {
     return (
         <View style={styles.container}>
             <FlatList
-                data={items?.filter(item => item != null) || []}
+                data={items?.filter((item) => item != null) || []}
                 renderItem={renderItem}
-                keyExtractor={(item, index) => item?.id?.toString() || `item-${index}`}
+                keyExtractor={(item, index) =>
+                    item?.id?.toString() || `item-${index}`
+                }
                 numColumns={2}
-                columnWrapperStyle={{ justifyContent: 'space-between' }}
+                columnWrapperStyle={{ justifyContent: "space-between" }}
                 contentContainerStyle={styles.listContent}
                 showsVerticalScrollIndicator={false}
-                ListHeaderComponent={(
+                ListHeaderComponent={
                     <View>
                         <View style={styles.heroCard}>
                             <View style={styles.heroRow}>
                                 <View style={{ flex: 1 }}>
-                                    <Text style={styles.heroEyebrow}>Delivery in 10 min</Text>
-                                    <Text style={styles.heroTitle}>Groceries, snacks & essentials</Text>
+                                    <Text style={styles.heroEyebrow}>
+                                        Delivery in 10 min
+                                    </Text>
+                                    <Text style={styles.heroTitle}>
+                                        Groceries, snacks & essentials
+                                    </Text>
                                     <View style={styles.heroTags}>
                                         <View style={styles.tagPill}>
-                                            <Ionicons name="flash" size={14} color={colors.accent} />
-                                            <Text style={styles.tagText}>Lightning fast</Text>
+                                            <Ionicons
+                                                name="flash"
+                                                size={14}
+                                                color={colors.accent}
+                                            />
+                                            <Text style={styles.tagText}>
+                                                Lightning fast
+                                            </Text>
                                         </View>
                                         <View style={styles.tagPillMuted}>
-                                            <Ionicons name="pricetag" size={14} color={colors.textMuted} />
-                                            <Text style={styles.tagTextMuted}>Deals near you</Text>
+                                            <Ionicons
+                                                name="pricetag"
+                                                size={14}
+                                                color={colors.textMuted}
+                                            />
+                                            <Text style={styles.tagTextMuted}>
+                                                Deals near you
+                                            </Text>
                                         </View>
                                     </View>
                                 </View>
@@ -223,65 +252,122 @@ export default function HomeScreen() {
 
                             <View style={styles.cardShell}>
                                 <View style={styles.searchContainer}>
-                                    <Ionicons name="search" size={20} color={colors.textMuted} style={styles.searchIcon} />
+                                    <Ionicons
+                                        name="search"
+                                        size={20}
+                                        color={colors.textMuted}
+                                        style={styles.searchIcon}
+                                    />
                                     <TextInput
                                         style={styles.searchInput}
                                         placeholder="Search fruits, veggies, snacks..."
                                         placeholderTextColor={colors.textMuted}
                                         value={searchQuery}
                                         onChangeText={setSearchQuery}
-                                        onSubmitEditing={() => handleSearch(searchQuery)}
+                                        onSubmitEditing={() =>
+                                            handleSearch(searchQuery)
+                                        }
                                         returnKeyType="search"
                                     />
-                                    {isSearching && <ActivityIndicator size="small" color={colors.primary} />}
+                                    {isSearching && (
+                                        <ActivityIndicator
+                                            size="small"
+                                            color={colors.primary}
+                                        />
+                                    )}
                                 </View>
 
                                 <FlatList
-                                    data={categories?.filter(item => item != null) || []}
+                                    data={
+                                        categories?.filter(
+                                            (item) => item != null
+                                        ) || []
+                                    }
                                     renderItem={renderCategory}
-                                    keyExtractor={(item, index) => item?.category?.toString() || `cat-${index}`}
+                                    keyExtractor={(item, index) =>
+                                        item?.category?.toString() ||
+                                        `cat-${index}`
+                                    }
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={styles.categoriesList}
+                                    contentContainerStyle={
+                                        styles.categoriesList
+                                    }
                                 />
 
                                 {(selectedCategory || searchQuery) && (
-                                    <TouchableOpacity style={styles.clearButton} onPress={clearFilters}>
-                                        <Ionicons name="close" size={16} color={colors.primary} />
-                                        <Text style={styles.clearButtonText}>Clear filters</Text>
+                                    <TouchableOpacity
+                                        style={styles.clearButton}
+                                        onPress={clearFilters}
+                                    >
+                                        <Ionicons
+                                            name="close"
+                                            size={16}
+                                            color={colors.primary}
+                                        />
+                                        <Text style={styles.clearButtonText}>
+                                            Clear filters
+                                        </Text>
                                     </TouchableOpacity>
                                 )}
                             </View>
                         </View>
 
-                        {featuredItems.length > 0 && !selectedCategory && !searchQuery && (
-                            <View style={styles.featuredContainer}>
-                                <View style={styles.sectionHeaderRow}>
-                                    <Text style={styles.sectionTitle}>Trending near you</Text>
-                                    <Ionicons name="flame" size={18} color={colors.accent} />
+                        {featuredItems.length > 0 &&
+                            !selectedCategory &&
+                            !searchQuery && (
+                                <View style={styles.featuredContainer}>
+                                    <View style={styles.sectionHeaderRow}>
+                                        <Text style={styles.sectionTitle}>
+                                            Trending near you
+                                        </Text>
+                                        <Ionicons
+                                            name="flame"
+                                            size={18}
+                                            color={colors.accent}
+                                        />
+                                    </View>
+                                    <FlatList
+                                        data={
+                                            featuredItems?.filter(
+                                                (item) => item != null
+                                            ) || []
+                                        }
+                                        renderItem={renderItem}
+                                        keyExtractor={(item, index) =>
+                                            item?.id?.toString() ||
+                                            `feat-${index}`
+                                        }
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        contentContainerStyle={
+                                            styles.featuredList
+                                        }
+                                    />
                                 </View>
-                                <FlatList
-                                    data={featuredItems?.filter(item => item != null) || []}
-                                    renderItem={renderItem}
-                                    keyExtractor={(item, index) => item?.id?.toString() || `feat-${index}`}
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={styles.featuredList}
-                                />
-                            </View>
-                        )}
+                            )}
 
                         <View style={styles.itemsHeaderRow}>
                             <Text style={styles.sectionTitle}>
-                                {selectedCategory ? `${selectedCategory} picks` : searchQuery ? 'Search results' : 'All items'}
+                                {selectedCategory
+                                    ? `${selectedCategory} picks`
+                                    : searchQuery
+                                    ? "Search results"
+                                    : "All items"}
                             </Text>
                             <View style={styles.badgePill}>
-                                <Ionicons name="leaf" size={14} color={colors.primary} />
-                                <Text style={styles.badgePillText}>Fresh stock</Text>
+                                <Ionicons
+                                    name="leaf"
+                                    size={14}
+                                    color={colors.primary}
+                                />
+                                <Text style={styles.badgePillText}>
+                                    Fresh stock
+                                </Text>
                             </View>
                         </View>
                     </View>
-                )}
+                }
             />
         </View>
     );
@@ -294,8 +380,8 @@ const styles = StyleSheet.create({
     },
     loadingContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
     },
     heroCard: {
         backgroundColor: colors.card,
@@ -304,69 +390,69 @@ const styles = StyleSheet.create({
         ...shadow.card,
     },
     heroRow: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
         gap: spacing.sm,
     },
     heroEyebrow: {
         color: colors.accent,
         fontSize: typography.small,
-        fontWeight: '700',
+        fontWeight: "700",
         marginBottom: spacing.xs,
     },
     heroTitle: {
         color: colors.text,
         fontSize: typography.h1,
-        fontWeight: '800',
+        fontWeight: "800",
         lineHeight: 32,
         marginBottom: spacing.sm,
     },
     heroTags: {
-        flexDirection: 'row',
+        flexDirection: "row",
         marginTop: spacing.xs,
     },
     tagPill: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xs,
-        backgroundColor: '#FFF7EB',
+        backgroundColor: "#FFF7EB",
         borderRadius: radius.md,
         marginRight: spacing.sm,
     },
     tagText: {
         color: colors.accent,
         fontSize: typography.small,
-        fontWeight: '700',
+        fontWeight: "700",
     },
     tagPillMuted: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xs,
-        backgroundColor: '#EEF2FF',
+        backgroundColor: "#EEF2FF",
         borderRadius: radius.md,
         marginRight: spacing.sm,
     },
     tagTextMuted: {
         color: colors.text,
         fontSize: typography.small,
-        fontWeight: '600',
+        fontWeight: "600",
     },
     heroBadge: {
         backgroundColor: colors.primary,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
         borderRadius: radius.lg,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         minWidth: 110,
         ...shadow.soft,
     },
     heroBadgeText: {
         color: colors.card,
-        fontWeight: '700',
+        fontWeight: "700",
         fontSize: typography.small,
         marginTop: 2,
     },
@@ -378,8 +464,8 @@ const styles = StyleSheet.create({
         ...shadow.soft,
     },
     searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: colors.page,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.sm,
@@ -412,17 +498,17 @@ const styles = StyleSheet.create({
     categoryText: {
         fontSize: typography.small,
         color: colors.text,
-        fontWeight: '600',
+        fontWeight: "600",
     },
     categoryTextSelected: {
         color: colors.card,
     },
     clearButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignSelf: 'flex-start',
-        backgroundColor: '#E8F7EF',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "flex-start",
+        backgroundColor: "#E8F7EF",
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs,
         borderRadius: radius.lg,
@@ -430,7 +516,7 @@ const styles = StyleSheet.create({
     },
     clearButtonText: {
         color: colors.primary,
-        fontWeight: '700',
+        fontWeight: "700",
         marginLeft: spacing.xs,
     },
     featuredContainer: {
@@ -439,13 +525,13 @@ const styles = StyleSheet.create({
     },
     sectionTitle: {
         fontSize: typography.h2,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.text,
     },
     sectionHeaderRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         paddingHorizontal: spacing.sm,
         marginBottom: spacing.sm,
     },
@@ -458,9 +544,9 @@ const styles = StyleSheet.create({
         paddingTop: spacing.md,
     },
     itemsHeaderRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         paddingHorizontal: spacing.sm,
         marginBottom: spacing.sm,
         marginTop: spacing.md,
@@ -470,56 +556,56 @@ const styles = StyleSheet.create({
         borderRadius: radius.lg,
         padding: spacing.md,
         marginBottom: spacing.md,
-        flexBasis: '48%',
+        flexBasis: "48%",
         ...shadow.soft,
     },
     itemImage: {
         marginBottom: spacing.sm,
-        alignSelf: 'center',
+        alignSelf: "center",
     },
     itemInfo: {
         flex: 1,
     },
     itemName: {
         fontSize: typography.body,
-        fontWeight: '700',
+        fontWeight: "700",
         color: colors.text,
         marginBottom: spacing.xs,
     },
     itemPrice: {
         fontSize: typography.h3,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.primary,
         marginBottom: spacing.xs,
     },
     itemDiscount: {
         fontSize: typography.small,
         color: colors.accent,
-        fontWeight: '700',
+        fontWeight: "700",
     },
     addButton: {
-        position: 'absolute',
+        position: "absolute",
         top: spacing.sm,
         right: spacing.sm,
         backgroundColor: colors.primary,
         width: 34,
         height: 34,
         borderRadius: 17,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         ...shadow.soft,
     },
     badgePill: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#E8F7EF',
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#E8F7EF",
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.xs,
         borderRadius: radius.lg,
     },
     badgePillText: {
         color: colors.primary,
-        fontWeight: '700',
+        fontWeight: "700",
         fontSize: typography.small,
     },
 });
