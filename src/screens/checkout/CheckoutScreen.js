@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -7,17 +7,17 @@ import {
     ScrollView,
     Alert,
     ActivityIndicator,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { cartAPI, addressesAPI, ordersAPI } from '../../services/api';
-import { colors, spacing, typography, radius, shadow } from '../../theme';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { cartAPI, addressesAPI, ordersAPI } from "../../services/api";
+import { colors, spacing, typography, radius, shadow } from "../../theme";
 
 export default function CheckoutScreen() {
     const [cartSummary, setCartSummary] = useState(null);
     const [addresses, setAddresses] = useState([]);
     const [selectedAddress, setSelectedAddress] = useState(null);
-    const [paymentMethod, setPaymentMethod] = useState('cash');
+    const [paymentMethod, setPaymentMethod] = useState("cash");
     const [isLoading, setIsLoading] = useState(true);
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const navigation = useNavigation();
@@ -41,14 +41,16 @@ export default function CheckoutScreen() {
             if (addressesResponse.data.success) {
                 setAddresses(addressesResponse.data.data);
                 // Auto-select default address
-                const defaultAddress = addressesResponse.data.data.find(addr => addr.isDefault);
+                const defaultAddress = addressesResponse.data.data.find(
+                    (addr) => addr.isDefault
+                );
                 if (defaultAddress) {
                     setSelectedAddress(defaultAddress);
                 }
             }
         } catch (error) {
-            console.error('Error loading checkout data:', error);
-            Alert.alert('Error', 'Failed to load checkout data');
+            console.error("Error loading checkout data:", error);
+            Alert.alert("Error", "Failed to load checkout data");
             navigation.goBack();
         } finally {
             setIsLoading(false);
@@ -57,19 +59,23 @@ export default function CheckoutScreen() {
 
     const handlePlaceOrder = async () => {
         if (!selectedAddress) {
-            Alert.alert('Error', 'Please select a delivery address');
+            Alert.alert("Error", "Please select a delivery address");
             return;
         }
 
-        if (!cartSummary || !cartSummary.items || cartSummary.items.length === 0) {
-            Alert.alert('Error', 'Your cart is empty');
+        if (
+            !cartSummary ||
+            !cartSummary.items ||
+            cartSummary.items.length === 0
+        ) {
+            Alert.alert("Error", "Your cart is empty");
             navigation.goBack();
             return;
         }
 
         try {
             setIsPlacingOrder(true);
-            console.log('Placing order with:', {
+            console.log("Placing order with:", {
                 deliveryAddressId: selectedAddress.id,
                 paymentMethod,
             });
@@ -79,50 +85,59 @@ export default function CheckoutScreen() {
                 paymentMethod,
             });
 
-            console.log('Order response:', response.data);
+            console.log("Order response:", response.data);
 
             if (response.data.success) {
                 Alert.alert(
-                    'Order Placed!',
-                    `Your order has been placed successfully. Order #${response.data.data.orderNumber || response.data.data.order?.id || 'N/A'}`,
+                    "Order Placed!",
+                    `Your order has been placed successfully. Order #${
+                        response.data.data.orderNumber ||
+                        response.data.data.order?.id ||
+                        "N/A"
+                    }`,
                     [
                         {
-                            text: 'View Order',
+                            text: "View Order",
                             onPress: () => {
-                                navigation.navigate('Orders');
+                                navigation.navigate("Orders");
                             },
                         },
                         {
-                            text: 'Continue Shopping',
-                            onPress: () => navigation.navigate('Home'),
+                            text: "Continue Shopping",
+                            onPress: () => navigation.navigate("Home"),
                         },
                     ]
                 );
             } else {
-                Alert.alert('Error', response.data.message || 'Failed to place order');
+                Alert.alert(
+                    "Error",
+                    response.data.message || "Failed to place order"
+                );
             }
         } catch (error) {
-            console.error('Error placing order:', error);
-            console.error('Error details:', {
+            console.error("Error placing order:", error);
+            console.error("Error details:", {
                 message: error.message,
                 response: error.response?.data,
                 status: error.response?.status,
             });
 
-            let errorMessage = 'Failed to place order. ';
+            let errorMessage = "Failed to place order. ";
             if (error.response?.data?.message) {
                 errorMessage += error.response.data.message;
             } else if (error.response?.status === 500) {
-                errorMessage += 'Server error occurred. Please try again later.';
-            } else if (error.message === 'Network Error') {
-                errorMessage += 'Network connection failed. Please check your internet connection.';
-            } else if (error.code === 'ECONNABORTED') {
-                errorMessage += 'Request timed out. Please try again.';
+                errorMessage +=
+                    "Server error occurred. Please try again later.";
+            } else if (error.message === "Network Error") {
+                errorMessage +=
+                    "Network connection failed. Please check your internet connection.";
+            } else if (error.code === "ECONNABORTED") {
+                errorMessage += "Request timed out. Please try again.";
             } else {
-                errorMessage += error.message || 'Unknown error occurred.';
+                errorMessage += error.message || "Unknown error occurred.";
             }
 
-            Alert.alert('Error', errorMessage);
+            Alert.alert("Error", errorMessage);
         } finally {
             setIsPlacingOrder(false);
         }
@@ -146,7 +161,7 @@ export default function CheckoutScreen() {
                 <Text style={styles.emptyText}>Your cart is empty</Text>
                 <TouchableOpacity
                     style={styles.shopButton}
-                    onPress={() => navigation.navigate('Home')}
+                    onPress={() => navigation.navigate("Home")}
                 >
                     <Text style={styles.shopButtonText}>Start Shopping</Text>
                 </TouchableOpacity>
@@ -155,7 +170,10 @@ export default function CheckoutScreen() {
     }
 
     return (
-        <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+        >
             <View style={styles.header}>
                 <TouchableOpacity
                     style={styles.iconButton}
@@ -173,7 +191,11 @@ export default function CheckoutScreen() {
                     <Text style={styles.topValue}>10 - 15 mins</Text>
                 </View>
                 <View style={styles.topChip}>
-                    <Ionicons name="shield-checkmark" size={16} color={colors.card} />
+                    <Ionicons
+                        name="shield-checkmark"
+                        size={16}
+                        color={colors.card}
+                    />
                     <Text style={styles.topChipText}>Safe delivery</Text>
                 </View>
             </View>
@@ -181,40 +203,68 @@ export default function CheckoutScreen() {
             {/* Delivery Address */}
             <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                    <Ionicons name="location" size={20} color={colors.primary} />
+                    <Ionicons
+                        name="location"
+                        size={20}
+                        color={colors.primary}
+                    />
                     <Text style={styles.sectionTitle}>Delivery Address</Text>
                 </View>
 
                 {addresses.length === 0 ? (
                     <View style={styles.emptyAddress}>
-                        <Text style={styles.emptyAddressText}>No addresses found</Text>
-                        <TouchableOpacity style={styles.addAddressButton}>
-                            <Text style={styles.addAddressText}>Add address</Text>
+                        <Text style={styles.emptyAddressText}>
+                            No addresses found
+                        </Text>
+                        <TouchableOpacity
+                            style={styles.addAddressButton}
+                            onPress={() => navigation.navigate("AddAddress")}
+                        >
+                            <Text style={styles.addAddressText}>
+                                Add address
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 ) : (
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                        {addresses?.filter(address => address != null).map((address) => (
-                            <TouchableOpacity
-                                key={address?.id || Math.random()}
-                                style={[
-                                    styles.addressCard,
-                                    selectedAddress?.id === address?.id && styles.addressCardSelected,
-                                ]}
-                                onPress={() => selectAddress(address)}
-                            >
-                                <Text style={styles.addressType}>
-                                    {address?.type ? address.type.charAt(0).toUpperCase() + address.type.slice(1) : 'Address'}
-                                    {address?.isDefault && ' (Default)'}
-                                </Text>
-                                <Text style={styles.addressText} numberOfLines={3}>
-                                    {address?.fullAddress || 'Address not available'}
-                                </Text>
-                                {address?.landmark && (
-                                    <Text style={styles.landmarkText}>{address.landmark}</Text>
-                                )}
-                            </TouchableOpacity>
-                        ))}
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                    >
+                        {addresses
+                            ?.filter((address) => address != null)
+                            .map((address) => (
+                                <TouchableOpacity
+                                    key={address?.id || Math.random()}
+                                    style={[
+                                        styles.addressCard,
+                                        selectedAddress?.id === address?.id &&
+                                            styles.addressCardSelected,
+                                    ]}
+                                    onPress={() => selectAddress(address)}
+                                >
+                                    <Text style={styles.addressType}>
+                                        {address?.type
+                                            ? address.type
+                                                  .charAt(0)
+                                                  .toUpperCase() +
+                                              address.type.slice(1)
+                                            : "Address"}
+                                        {address?.isDefault && " (Default)"}
+                                    </Text>
+                                    <Text
+                                        style={styles.addressText}
+                                        numberOfLines={3}
+                                    >
+                                        {address?.fullAddress ||
+                                            "Address not available"}
+                                    </Text>
+                                    {address?.landmark && (
+                                        <Text style={styles.landmarkText}>
+                                            {address.landmark}
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+                            ))}
                     </ScrollView>
                 )}
             </View>
@@ -226,17 +276,26 @@ export default function CheckoutScreen() {
                     <Text style={styles.sectionTitle}>Order Summary</Text>
                 </View>
 
-                {cartSummary?.items?.filter(item => item != null).map((item) => (
-                    <View key={item?.id || Math.random()} style={styles.orderItem}>
-                        <View style={styles.itemInfo}>
-                            <Text style={styles.itemName} numberOfLines={2}>
-                                {item?.name || 'Unknown Item'}
+                {cartSummary?.items
+                    ?.filter((item) => item != null)
+                    .map((item) => (
+                        <View
+                            key={item?.id || Math.random()}
+                            style={styles.orderItem}
+                        >
+                            <View style={styles.itemInfo}>
+                                <Text style={styles.itemName} numberOfLines={2}>
+                                    {item?.name || "Unknown Item"}
+                                </Text>
+                                <Text style={styles.itemQuantity}>
+                                    Qty: {item?.quantity || 0}
+                                </Text>
+                            </View>
+                            <Text style={styles.itemPrice}>
+                                ₹{item?.totalPrice || 0}
                             </Text>
-                            <Text style={styles.itemQuantity}>Qty: {item?.quantity || 0}</Text>
                         </View>
-                        <Text style={styles.itemPrice}>₹{item?.totalPrice || 0}</Text>
-                    </View>
-                ))}
+                    ))}
             </View>
 
             {/* Payment Method */}
@@ -249,28 +308,38 @@ export default function CheckoutScreen() {
                 <TouchableOpacity
                     style={[
                         styles.paymentOption,
-                        paymentMethod === 'cash' && styles.paymentOptionSelected,
+                        paymentMethod === "cash" &&
+                            styles.paymentOptionSelected,
                     ]}
-                    onPress={() => setPaymentMethod('cash')}
+                    onPress={() => setPaymentMethod("cash")}
                 >
                     <Ionicons name="cash" size={20} color={colors.success} />
                     <Text style={styles.paymentText}>Cash on Delivery</Text>
-                    {paymentMethod === 'cash' && (
-                        <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+                    {paymentMethod === "cash" && (
+                        <Ionicons
+                            name="checkmark-circle"
+                            size={20}
+                            color={colors.primary}
+                        />
                     )}
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[
                         styles.paymentOption,
-                        paymentMethod === 'online' && styles.paymentOptionSelected,
+                        paymentMethod === "online" &&
+                            styles.paymentOptionSelected,
                     ]}
-                    onPress={() => setPaymentMethod('online')}
+                    onPress={() => setPaymentMethod("online")}
                 >
                     <Ionicons name="card" size={20} color={colors.primary} />
                     <Text style={styles.paymentText}>Online Payment</Text>
-                    {paymentMethod === 'online' && (
-                        <Ionicons name="checkmark-circle" size={20} color={colors.primary} />
+                    {paymentMethod === "online" && (
+                        <Ionicons
+                            name="checkmark-circle"
+                            size={20}
+                            color={colors.primary}
+                        />
                     )}
                 </TouchableOpacity>
             </View>
@@ -279,15 +348,21 @@ export default function CheckoutScreen() {
             <View style={styles.totalSection}>
                 <View style={styles.totalRow}>
                     <Text style={styles.totalLabel}>Subtotal</Text>
-                    <Text style={styles.totalValue}>₹{cartSummary.subtotal}</Text>
+                    <Text style={styles.totalValue}>
+                        ₹{cartSummary.subtotal}
+                    </Text>
                 </View>
                 <View style={styles.totalRow}>
                     <Text style={styles.totalLabel}>Delivery Fee</Text>
-                    <Text style={styles.totalValue}>₹{cartSummary.deliveryFee}</Text>
+                    <Text style={styles.totalValue}>
+                        ₹{cartSummary.deliveryFee}
+                    </Text>
                 </View>
                 <View style={[styles.totalRow, styles.finalTotal]}>
                     <Text style={styles.finalTotalLabel}>Total</Text>
-                    <Text style={styles.finalTotalValue}>₹{cartSummary.total}</Text>
+                    <Text style={styles.finalTotalValue}>
+                        ₹{cartSummary.total}
+                    </Text>
                 </View>
             </View>
 
@@ -296,7 +371,8 @@ export default function CheckoutScreen() {
                 <TouchableOpacity
                     style={[
                         styles.placeOrderButton,
-                        (!selectedAddress || isPlacingOrder) && styles.buttonDisabled,
+                        (!selectedAddress || isPlacingOrder) &&
+                            styles.buttonDisabled,
                     ]}
                     onPress={handlePlaceOrder}
                     disabled={!selectedAddress || isPlacingOrder}
@@ -305,7 +381,11 @@ export default function CheckoutScreen() {
                         <ActivityIndicator color={colors.card} />
                     ) : (
                         <>
-                            <Ionicons name="checkmark-circle" size={20} color={colors.card} />
+                            <Ionicons
+                                name="checkmark-circle"
+                                size={20}
+                                color={colors.card}
+                            />
                             <Text style={styles.placeOrderText}>
                                 Place Order • ₹{cartSummary.total}
                             </Text>
@@ -324,20 +404,20 @@ const styles = StyleSheet.create({
     },
     loadingContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
     },
     emptyContainer: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         padding: spacing.lg,
     },
     emptyText: {
         fontSize: typography.h2,
         color: colors.text,
         marginBottom: spacing.md,
-        fontWeight: '800',
+        fontWeight: "800",
     },
     shopButton: {
         backgroundColor: colors.primary,
@@ -349,12 +429,12 @@ const styles = StyleSheet.create({
     shopButtonText: {
         color: colors.card,
         fontSize: typography.body,
-        fontWeight: '800',
+        fontWeight: "800",
     },
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         paddingHorizontal: spacing.md,
         paddingTop: 50,
         paddingBottom: spacing.md,
@@ -364,13 +444,13 @@ const styles = StyleSheet.create({
         height: 42,
         borderRadius: 21,
         backgroundColor: colors.card,
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: "center",
+        justifyContent: "center",
         ...shadow.soft,
     },
     headerTitle: {
         fontSize: typography.h2,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.text,
     },
     topBar: {
@@ -379,9 +459,9 @@ const styles = StyleSheet.create({
         marginBottom: spacing.md,
         borderRadius: radius.lg,
         padding: spacing.md,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         ...shadow.card,
     },
     topLabel: {
@@ -391,12 +471,12 @@ const styles = StyleSheet.create({
     topValue: {
         color: colors.text,
         fontSize: typography.h3,
-        fontWeight: '800',
+        fontWeight: "800",
         marginTop: spacing.xs,
     },
     topChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         backgroundColor: colors.primary,
         paddingHorizontal: spacing.md,
         paddingVertical: spacing.xs,
@@ -405,7 +485,7 @@ const styles = StyleSheet.create({
     },
     topChipText: {
         color: colors.card,
-        fontWeight: '700',
+        fontWeight: "700",
         fontSize: typography.small,
     },
     section: {
@@ -418,17 +498,17 @@ const styles = StyleSheet.create({
     },
     sectionHeader: {
         marginBottom: spacing.sm,
-        alignItems: 'center',
+        alignItems: "center",
         marginBottom: spacing.sm,
     },
     sectionTitle: {
         fontSize: typography.h3,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.text,
         marginLeft: spacing.sm,
     },
     emptyAddress: {
-        alignItems: 'center',
+        alignItems: "center",
         padding: spacing.md,
     },
     emptyAddressText: {
@@ -444,7 +524,7 @@ const styles = StyleSheet.create({
     },
     addAddressText: {
         color: colors.card,
-        fontWeight: '700',
+        fontWeight: "700",
     },
     addressCard: {
         borderWidth: 1,
@@ -456,11 +536,11 @@ const styles = StyleSheet.create({
     },
     addressCardSelected: {
         borderColor: colors.primary,
-        backgroundColor: '#E8F7EF',
+        backgroundColor: "#E8F7EF",
     },
     addressType: {
         fontSize: typography.body,
-        fontWeight: '700',
+        fontWeight: "700",
         color: colors.text,
         marginBottom: spacing.xs,
     },
@@ -474,9 +554,9 @@ const styles = StyleSheet.create({
         color: colors.textMuted,
     },
     orderItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         paddingVertical: spacing.sm,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
@@ -488,7 +568,7 @@ const styles = StyleSheet.create({
         fontSize: typography.body,
         color: colors.text,
         marginBottom: spacing.xs,
-        fontWeight: '700',
+        fontWeight: "700",
     },
     itemQuantity: {
         fontSize: typography.small,
@@ -496,12 +576,12 @@ const styles = StyleSheet.create({
     },
     itemPrice: {
         fontSize: typography.body,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.primary,
     },
     paymentOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         padding: spacing.md,
         borderWidth: 1,
         borderColor: colors.border,
@@ -510,14 +590,14 @@ const styles = StyleSheet.create({
     },
     paymentOptionSelected: {
         borderColor: colors.primary,
-        backgroundColor: '#E8F7EF',
+        backgroundColor: "#E8F7EF",
     },
     paymentText: {
         fontSize: typography.body,
         color: colors.text,
         marginLeft: spacing.sm,
         flex: 1,
-        fontWeight: '700',
+        fontWeight: "700",
     },
     totalSection: {
         backgroundColor: colors.card,
@@ -528,9 +608,9 @@ const styles = StyleSheet.create({
         ...shadow.card,
     },
     totalRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         marginBottom: spacing.sm,
     },
     totalLabel: {
@@ -540,7 +620,7 @@ const styles = StyleSheet.create({
     totalValue: {
         fontSize: typography.body,
         color: colors.text,
-        fontWeight: '700',
+        fontWeight: "700",
     },
     finalTotal: {
         borderTopWidth: 1,
@@ -550,12 +630,12 @@ const styles = StyleSheet.create({
     },
     finalTotalLabel: {
         fontSize: typography.h3,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.text,
     },
     finalTotalValue: {
         fontSize: typography.h2,
-        fontWeight: '800',
+        fontWeight: "800",
         color: colors.primary,
     },
     buttonContainer: {
@@ -565,9 +645,9 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
         borderRadius: radius.md,
         padding: spacing.md,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
         gap: spacing.xs,
         ...shadow.card,
     },
@@ -577,7 +657,7 @@ const styles = StyleSheet.create({
     placeOrderText: {
         color: colors.card,
         fontSize: typography.body,
-        fontWeight: '800',
+        fontWeight: "800",
         marginLeft: spacing.xs,
     },
 });
