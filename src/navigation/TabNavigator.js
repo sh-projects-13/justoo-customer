@@ -39,6 +39,7 @@ function CartStack() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="CartMain" component={CartScreen} />
             <Stack.Screen name="Checkout" component={CheckoutScreen} />
+            <Stack.Screen name="AddAddress" component={AddAddressScreen} />
         </Stack.Navigator>
     );
 }
